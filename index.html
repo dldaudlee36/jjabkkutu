@@ -1,145 +1,49 @@
-﻿<!DOCTYPE html>
-<html lang="ko" data-theme="kkutu-classic">
+<!DOCTYPE html>
+<html lang="ko" data-theme="simple-dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>끄투 LITE · 실시간 끝말잇기</title>
+  <title>?꾪닾 LITE 쨌 ?ㅼ떆媛??앸쭚?뉕린</title>
   <style>
 /* ============================================================
    KKuTu-Lite Multi-Theme Stylesheet (6 Distinct Themes)
    ============================================================ */
 
-/* 1. 기본 테마: 🌿 오리지널 끄투 (칠판 & 우드 캐주얼 감성) */
+/* 1. 기본 테마: 🌑 심플 다크 (모던 & 미니멀 옵시디언) */
 :root,
-html[data-theme="kkutu-classic"] {
-  --bg-page: linear-gradient(180deg, #e9dec9 0%, #d8c7aa 100%);
-  --bg-topbar: #4a321f;
-  --text-topbar: #fff8ed;
-  --bg-panel: #fbf7f0;
-  --bg-panel-header: #efe6d5;
-  --bg-card: #ffffff;
-  --bg-card-subtle: #f3ece0;
-  --bg-input: #ffffff;
-  --border-subtle: #d6c7b2;
-  --border-strong: #b89f80;
-  --text-main: #2c1e14;
-  --text-sub: #5c4738;
-  --text-muted: #8a7360;
+html[data-theme="simple-dark"] {
+  --bg-page: #0f1117;
+  --bg-topbar: #161922;
+  --text-topbar: #f3f4f6;
+  --bg-panel: #161922;
+  --bg-panel-header: #1a1e29;
+  --bg-card: #1e222e;
+  --bg-card-subtle: #141720;
+  --bg-input: #0c0e14;
+  --border-subtle: #2a2f3d;
+  --border-strong: #3b82f6;
+  --text-main: #f9fafb;
+  --text-sub: #9ca3af;
+  --text-muted: #6b7280;
 
-  /* 전광판 (그린 칠판 스타일) */
-  --arena-bg: linear-gradient(180deg, #1b4332 0%, #122e22 100%);
-  --arena-border: #8c5a32;
-  --arena-text: #f8fafc;
-  --arena-sub: #b7e4c7;
-  --arena-box-bg: rgba(10, 30, 20, 0.55);
-  --arena-box-border: #52b788;
-
-  --accent-primary: #d97706;
-  --accent-primary-bg: linear-gradient(135deg, #d97706, #b45309);
-  --accent-gold: #f59e0b;
-  --accent-green: #16a34a;
-  --accent-red: #dc2626;
-  --accent-purple: #7c3aed;
-  --shadow-soft: 0 6px 18px rgba(74, 50, 31, 0.12);
-}
-
-/* 2. 🍬 파스텔 캔디 (화사한 라이트 테마) */
-html[data-theme="pastel-pop"] {
-  --bg-page: linear-gradient(135deg, #fff5f7 0%, #f0f9ff 100%);
-  --bg-topbar: #ffffff;
-  --text-topbar: #334155;
-  --bg-panel: #ffffff;
-  --bg-panel-header: #fdf2f8;
-  --bg-card: #ffffff;
-  --bg-card-subtle: #f8fafc;
-  --bg-input: #ffffff;
-  --border-subtle: #fbcfe8;
-  --border-strong: #f472b6;
-  --text-main: #1e293b;
-  --text-sub: #475569;
-  --text-muted: #94a3b8;
-
-  --arena-bg: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  --arena-border: #f472b6;
+  /* 전광판 (모던 다크 & 사파이어 블루) */
+  --arena-bg: linear-gradient(180deg, #161a24 0%, #0d1017 100%);
+  --arena-border: #3b82f6;
   --arena-text: #ffffff;
-  --arena-sub: #e0e7ff;
-  --arena-box-bg: rgba(255, 255, 255, 0.16);
-  --arena-box-border: #fbcfe8;
+  --arena-sub: #60a5fa;
+  --arena-box-bg: rgba(59, 130, 246, 0.08);
+  --arena-box-border: #3b82f6;
 
-  --accent-primary: #ec4899;
-  --accent-primary-bg: linear-gradient(135deg, #ec4899, #db2777);
+  --accent-primary: #3b82f6;
+  --accent-primary-bg: linear-gradient(135deg, #3b82f6, #2563eb);
   --accent-gold: #f59e0b;
   --accent-green: #10b981;
   --accent-red: #ef4444;
   --accent-purple: #8b5cf6;
-  --shadow-soft: 0 8px 24px rgba(236, 72, 153, 0.10);
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
-/* 3. 🍵 말차 포레스트 (차분한 세이지 그린) */
-html[data-theme="matcha-forest"] {
-  --bg-page: linear-gradient(180deg, #e6eee4 0%, #d2e0cf 100%);
-  --bg-topbar: #233829;
-  --text-topbar: #f1f7f2;
-  --bg-panel: #f7faf6;
-  --bg-panel-header: #e8f0e6;
-  --bg-card: #ffffff;
-  --bg-card-subtle: #edf3eb;
-  --bg-input: #ffffff;
-  --border-subtle: #c5d6c1;
-  --border-strong: #7fa679;
-  --text-main: #1c2d20;
-  --text-sub: #435c49;
-  --text-muted: #728c78;
-
-  --arena-bg: linear-gradient(180deg, #1b2e21 0%, #111f16 100%);
-  --arena-border: #6a994e;
-  --arena-text: #f4f9f5;
-  --arena-sub: #a7c957;
-  --arena-box-bg: rgba(255, 255, 255, 0.08);
-  --arena-box-border: #80b918;
-
-  --accent-primary: #386641;
-  --accent-primary-bg: linear-gradient(135deg, #40916c, #2d6a4f);
-  --accent-gold: #e9c46a;
-  --accent-green: #2a9d8f;
-  --accent-red: #e76f51;
-  --accent-purple: #6d597a;
-  --shadow-soft: 0 6px 18px rgba(35, 56, 41, 0.10);
-}
-
-/* 4. 🌇 선셋 라운지 (따뜻한 에스프레소 & 앰버 다크) */
-html[data-theme="sunset-lounge"] {
-  --bg-page: radial-gradient(circle at 50% 0%, #2b1d19 0%, #140d0b 100%);
-  --bg-topbar: #1f1411;
-  --text-topbar: #fef3c7;
-  --bg-panel: #261915;
-  --bg-panel-header: #1d120f;
-  --bg-card: #32211c;
-  --bg-card-subtle: #1c120f;
-  --bg-input: #140c0a;
-  --border-subtle: rgba(251, 146, 60, 0.22);
-  --border-strong: #f97316;
-  --text-main: #fff7ed;
-  --text-sub: #fed7aa;
-  --text-muted: #a88976;
-
-  --arena-bg: linear-gradient(180deg, #3b1d16 0%, #1f0e0a 100%);
-  --arena-border: #f97316;
-  --arena-text: #fff7ed;
-  --arena-sub: #fdba74;
-  --arena-box-bg: rgba(0, 0, 0, 0.38);
-  --arena-box-border: #fb923c;
-
-  --accent-primary: #f97316;
-  --accent-primary-bg: linear-gradient(135deg, #ea580c, #c2410c);
-  --accent-gold: #fbbf24;
-  --accent-green: #22c55e;
-  --accent-red: #ef4444;
-  --accent-purple: #a855f7;
-  --shadow-soft: 0 10px 26px rgba(0, 0, 0, 0.45);
-}
-
-/* 5. ⚡ 아케이드 네온 (신스웨이브 오락실) */
+/* 2. ⚡ 아케이드 네온 (신스웨이브 오락실) */
 html[data-theme="cyber-neon"] {
   --bg-page: radial-gradient(circle at 50% 0%, #240b36 0%, #0d021a 100%);
   --bg-topbar: #140524;
@@ -171,36 +75,132 @@ html[data-theme="cyber-neon"] {
   --shadow-soft: 0 10px 30px rgba(247, 37, 133, 0.20);
 }
 
-/* 6. 📓 모던 미니멀 (깔끔한 화이트 & 블랙) */
-html[data-theme="minimal-mono"] {
-  --bg-page: #f3f4f6;
-  --bg-topbar: #111827;
-  --text-topbar: #f9fafb;
+/* 3. 🌊 딥 오션 (심해의 아비스 & 시안) */
+html[data-theme="deep-ocean"] {
+  --bg-page: radial-gradient(circle at 50% 0%, #031e3b 0%, #020b18 100%);
+  --bg-topbar: #03162b;
+  --text-topbar: #e0f2fe;
+  --bg-panel: #061a33;
+  --bg-panel-header: #041326;
+  --bg-card: #0b2547;
+  --bg-card-subtle: #04152b;
+  --bg-input: #020e1f;
+  --border-subtle: rgba(56, 189, 248, 0.22);
+  --border-strong: #0284c7;
+  --text-main: #f0f9ff;
+  --text-sub: #7dd3fc;
+  --text-muted: #475569;
+
+  --arena-bg: linear-gradient(180deg, #072a4f 0%, #021226 100%);
+  --arena-border: #00f5d4;
+  --arena-text: #ffffff;
+  --arena-sub: #38bdf8;
+  --arena-box-bg: rgba(2, 132, 199, 0.16);
+  --arena-box-border: #38bdf8;
+
+  --accent-primary: #0284c7;
+  --accent-primary-bg: linear-gradient(135deg, #0ea5e9, #0284c7);
+  --accent-gold: #facc15;
+  --accent-green: #00f5d4;
+  --accent-red: #f43f5e;
+  --accent-purple: #818cf8;
+  --shadow-soft: 0 10px 28px rgba(2, 132, 199, 0.20);
+}
+
+/* 4. 💻 터미널 매트릭스 (사이버 레트로 & 그린 인광) */
+html[data-theme="matrix-terminal"] {
+  --bg-page: #040806;
+  --bg-topbar: #060d09;
+  --text-topbar: #22c55e;
+  --bg-panel: #08120c;
+  --bg-panel-header: #050a07;
+  --bg-card: #0e1f14;
+  --bg-card-subtle: #07100a;
+  --bg-input: #020503;
+  --border-subtle: rgba(34, 197, 94, 0.26);
+  --border-strong: #00ff66;
+  --text-main: #e8f5e9;
+  --text-sub: #4ade80;
+  --text-muted: #3f624d;
+
+  --arena-bg: linear-gradient(180deg, #08170e 0%, #030a06 100%);
+  --arena-border: #00ff66;
+  --arena-text: #f0fdf4;
+  --arena-sub: #00ff66;
+  --arena-box-bg: rgba(0, 255, 102, 0.08);
+  --arena-box-border: #00ff66;
+
+  --accent-primary: #16a34a;
+  --accent-primary-bg: linear-gradient(135deg, #22c55e, #15803d);
+  --accent-gold: #facc15;
+  --accent-green: #00ff66;
+  --accent-red: #ef4444;
+  --accent-purple: #a855f7;
+  --shadow-soft: 0 8px 24px rgba(0, 255, 102, 0.12);
+}
+
+/* 5. 👑 로얄 벨벳 (임페리얼 바이올렛 & 골드) */
+html[data-theme="royal-velvet"] {
+  --bg-page: radial-gradient(circle at 50% 0%, #1f0b2e 0%, #0d0314 100%);
+  --bg-topbar: #14051f;
+  --text-topbar: #fef3c7;
+  --bg-panel: #1c092a;
+  --bg-panel-header: #13041e;
+  --bg-card: #270f3b;
+  --bg-card-subtle: #140520;
+  --bg-input: #0b0113;
+  --border-subtle: rgba(217, 70, 239, 0.25);
+  --border-strong: #f59e0b;
+  --text-main: #fdf4ff;
+  --text-sub: #e9d5ff;
+  --text-muted: #93739e;
+
+  --arena-bg: linear-gradient(180deg, #2c0e44 0%, #11031c 100%);
+  --arena-border: #f59e0b;
+  --arena-text: #ffffff;
+  --arena-sub: #fde047;
+  --arena-box-bg: rgba(245, 158, 11, 0.12);
+  --arena-box-border: #fbbf24;
+
+  --accent-primary: #a855f7;
+  --accent-primary-bg: linear-gradient(135deg, #a855f7, #7e22ce);
+  --accent-gold: #fbbf24;
+  --accent-green: #10b981;
+  --accent-red: #f43f5e;
+  --accent-purple: #c084fc;
+  --shadow-soft: 0 10px 28px rgba(168, 85, 247, 0.20);
+}
+
+/* 6. ❄️ 아이스 스노우 (크리스탈 쿨 화이트) */
+html[data-theme="clean-ice"] {
+  --bg-page: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  --bg-topbar: #ffffff;
+  --text-topbar: #0369a1;
   --bg-panel: #ffffff;
-  --bg-panel-header: #f9fafb;
+  --bg-panel-header: #f0f9ff;
   --bg-card: #ffffff;
-  --bg-card-subtle: #f3f4f6;
+  --bg-card-subtle: #f8fafc;
   --bg-input: #ffffff;
-  --border-subtle: #e5e7eb;
-  --border-strong: #111827;
-  --text-main: #111827;
-  --text-sub: #374151;
-  --text-muted: #6b7280;
+  --border-subtle: #bae6fd;
+  --border-strong: #0ea5e9;
+  --text-main: #0f172a;
+  --text-sub: #334155;
+  --text-muted: #64748b;
 
-  --arena-bg: linear-gradient(180deg, #18181b 0%, #09090b 100%);
-  --arena-border: #3f3f46;
-  --arena-text: #fafafa;
-  --arena-sub: #a1a1aa;
-  --arena-box-bg: rgba(255, 255, 255, 0.08);
-  --arena-box-border: #71717a;
+  --arena-bg: linear-gradient(180deg, #0c4a6e 0%, #082f49 100%);
+  --arena-border: #38bdf8;
+  --arena-text: #ffffff;
+  --arena-sub: #7dd3fc;
+  --arena-box-bg: rgba(255, 255, 255, 0.12);
+  --arena-box-border: #bae6fd;
 
-  --accent-primary: #2563eb;
-  --accent-primary-bg: linear-gradient(135deg, #1d4ed8, #1e40af);
+  --accent-primary: #0284c7;
+  --accent-primary-bg: linear-gradient(135deg, #0ea5e9, #0284c7);
   --accent-gold: #f59e0b;
-  --accent-green: #16a34a;
-  --accent-red: #dc2626;
-  --accent-purple: #6366f1;
-  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-purple: #8b5cf6;
+  --shadow-soft: 0 6px 20px rgba(14, 165, 233, 0.10);
 }
 
 * {
@@ -1652,7 +1652,8 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   white-space: nowrap;
 }
 
-</style>
+  </style>
+</head>
   
 </head>
 <body>
@@ -1671,12 +1672,12 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
       <div class="theme-picker-wrap" title="화면 테마 변경">
         <span>🎨 테마</span>
         <select id="themeSelect" class="theme-select">
-          <option value="kkutu-classic">🌿 오리지널 끄투 (칠판/우드)</option>
-          <option value="pastel-pop">🍬 파스텔 캔디 (라이트)</option>
-          <option value="matcha-forest">🍵 말차 포레스트</option>
-          <option value="sunset-lounge">🌇 선셋 라운지 (웜 브라운)</option>
+          <option value="simple-dark">🌑 심플 다크</option>
           <option value="cyber-neon">⚡ 아케이드 네온</option>
-          <option value="minimal-mono">📓 모던 미니멀 (화이트)</option>
+          <option value="deep-ocean">🌊 딥 오션</option>
+          <option value="matrix-terminal">💻 터미널 매트릭스</option>
+          <option value="royal-velvet">👑 로얄 벨벳</option>
+          <option value="clean-ice">❄️ 아이스 스노우</option>
         </select>
       </div>
 
@@ -335652,12 +335653,14 @@ const App = (() => {
 
   function loadProfile() {
     try {
-      const savedTheme = localStorage.getItem('kkutu_theme_v1');
-      if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        const sel = document.getElementById('themeSelect');
-        if (sel) sel.value = savedTheme;
+      const validThemes = ['simple-dark', 'cyber-neon', 'deep-ocean', 'matrix-terminal', 'royal-velvet', 'clean-ice'];
+      let savedTheme = localStorage.getItem('kkutu_theme_v1');
+      if (!savedTheme || !validThemes.includes(savedTheme)) {
+        savedTheme = 'simple-dark';
       }
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      const sel = document.getElementById('themeSelect');
+      if (sel) sel.value = savedTheme;
       const saved = localStorage.getItem('kkutu_my_profile_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -338021,6 +338024,6 @@ window.addEventListener('DOMContentLoaded', () => {
   App.init();
 });
 
-</script>
+  </script>
 </body>
 </html>
