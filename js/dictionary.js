@@ -767,9 +767,10 @@ const DictionaryEngine = (() => {
    * 원본 끄투 방식: 라운드 수에 맞는 '라운드 제시어(예: 5라운드 -> 아이스크림)' 뽑기
    */
   function pickRoundTitleWord(totalRounds = 5) {
-    const pool = ROUND_TITLE_WORDS[totalRounds] || ROUND_TITLE_WORDS[5];
-    const word = pool[Math.floor(Math.random() * pool.length)];
-    return Array.from(word);
+    const rounds = Math.max(1, Math.min(10, parseInt(totalRounds, 10) || 5));
+    const pool = ROUND_TITLE_WORDS[rounds] || ROUND_TITLE_WORDS[5];
+    const word = pool ? pool[Math.floor(Math.random() * pool.length)] : '아이스크림';
+    return String(word || '아이스크림');
   }
 
   function pickStartingChar(rules = {}) {

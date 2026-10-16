@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko" data-theme="simple-dark">
 <head>
   <meta charset="UTF-8" />
@@ -1654,6 +1654,8 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 
   </style>
 </head>
+</head>
+</head>
   
 </head>
 <body>
@@ -1672,12 +1674,12 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
       <div class="theme-picker-wrap" title="화면 테마 변경">
         <span>🎨 테마</span>
         <select id="themeSelect" class="theme-select">
-          <option value="simple-dark">🌑 심플 다크</option>
-          <option value="cyber-neon">⚡ 아케이드 네온</option>
-          <option value="deep-ocean">🌊 딥 오션</option>
-          <option value="matrix-terminal">💻 터미널 매트릭스</option>
-          <option value="royal-velvet">👑 로얄 벨벳</option>
-          <option value="clean-ice">❄️ 아이스 스노우</option>
+          <option value="simple-dark">?뙌 ?ы뵆 ?ㅽ겕</option>
+          <option value="cyber-neon">???꾩??대뱶 ?ㅼ삩</option>
+          <option value="deep-ocean">?뙄 ???ㅼ뀡</option>
+          <option value="matrix-terminal">?뮲 ?곕???留ㅽ듃由?뒪</option>
+          <option value="royal-velvet">?몣 濡쒖뻹 踰⑤껙</option>
+          <option value="clean-ice">?꾬툘 ?꾩씠???ㅻ끂??/option>
         </select>
       </div>
 
@@ -335442,9 +335444,10 @@ const DictionaryEngine = (() => {
    * 원본 끄투 방식: 라운드 수에 맞는 '라운드 제시어(예: 5라운드 -> 아이스크림)' 뽑기
    */
   function pickRoundTitleWord(totalRounds = 5) {
-    const pool = ROUND_TITLE_WORDS[totalRounds] || ROUND_TITLE_WORDS[5];
-    const word = pool[Math.floor(Math.random() * pool.length)];
-    return Array.from(word);
+    const rounds = Math.max(1, Math.min(10, parseInt(totalRounds, 10) || 5));
+    const pool = ROUND_TITLE_WORDS[rounds] || ROUND_TITLE_WORDS[5];
+    const word = pool ? pool[Math.floor(Math.random() * pool.length)] : '아이스크림';
+    return String(word || '아이스크림');
   }
 
   function pickStartingChar(rules = {}) {
@@ -336649,7 +336652,8 @@ const App = (() => {
     room.game.roundTimeMax = room.roundTime;
 
     // 원본 끄투 방식: 상단 라운드 제시어의 해당 라운드 글자로 시작
-    const titleWord = room.game.roundTitleWord || '';
+    const rawTitle = room.game.roundTitleWord;
+    const titleWord = typeof rawTitle === 'string' ? rawTitle : (Array.isArray(rawTitle) ? rawTitle.join('') : '');
     const roundChar = titleWord[roundNum - 1];
     room.game.targetChar = roundChar || DictionaryEngine.pickStartingChar(room.rules);
 
@@ -337575,7 +337579,8 @@ const App = (() => {
 
     const titleStrip = document.getElementById('roundTitleStrip');
     if (titleStrip) {
-      const titleWord = room.game.roundTitleWord || '';
+      const rawTitle = room.game.roundTitleWord;
+      const titleWord = typeof rawTitle === 'string' ? rawTitle : (Array.isArray(rawTitle) ? rawTitle.join('') : '');
       if (isPlaying && titleWord) {
         titleStrip.innerHTML = titleWord.split('').map((ch, idx) => {
           const rNum = idx + 1;

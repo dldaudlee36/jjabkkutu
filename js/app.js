@@ -98,12 +98,14 @@ const App = (() => {
 
   function loadProfile() {
     try {
-      const savedTheme = localStorage.getItem('kkutu_theme_v1');
-      if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        const sel = document.getElementById('themeSelect');
-        if (sel) sel.value = savedTheme;
+      const validThemes = ['simple-dark', 'cyber-neon', 'deep-ocean', 'matrix-terminal', 'royal-velvet', 'clean-ice'];
+      let savedTheme = localStorage.getItem('kkutu_theme_v1');
+      if (!savedTheme || !validThemes.includes(savedTheme)) {
+        savedTheme = 'simple-dark';
       }
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      const sel = document.getElementById('themeSelect');
+      if (sel) sel.value = savedTheme;
       const saved = localStorage.getItem('kkutu_my_profile_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -1092,7 +1094,8 @@ const App = (() => {
     room.game.roundTimeMax = room.roundTime;
 
     // 원본 끄투 방식: 상단 라운드 제시어의 해당 라운드 글자로 시작
-    const titleWord = room.game.roundTitleWord || '';
+    const rawTitle = room.game.roundTitleWord;
+    const titleWord = typeof rawTitle === 'string' ? rawTitle : (Array.isArray(rawTitle) ? rawTitle.join('') : '');
     const roundChar = titleWord[roundNum - 1];
     room.game.targetChar = roundChar || DictionaryEngine.pickStartingChar(room.rules);
 
@@ -2018,7 +2021,8 @@ const App = (() => {
 
     const titleStrip = document.getElementById('roundTitleStrip');
     if (titleStrip) {
-      const titleWord = room.game.roundTitleWord || '';
+      const rawTitle = room.game.roundTitleWord;
+      const titleWord = typeof rawTitle === 'string' ? rawTitle : (Array.isArray(rawTitle) ? rawTitle.join('') : '');
       if (isPlaying && titleWord) {
         titleStrip.innerHTML = titleWord.split('').map((ch, idx) => {
           const rNum = idx + 1;

@@ -1,5 +1,5 @@
 ﻿// 국립국어원 표준국어대사전 기반 끝말잇기 표제어 DB (332231개)
-window.KKUTU_RAW_WORDS_DB = "가가
+window.KKUTU_RAW_WORDS_DB = `가가
 가가기
 가가대소
 가가례
@@ -332229,4 +332229,4 @@ window.KKUTU_RAW_WORDS_DB = "가가
 힝뚱힝뚱
 힝여케
 힝이
-힝힝";
+힝힝`;
