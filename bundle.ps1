@@ -29,21 +29,6 @@ if ($styleCloseIdx -eq -1 -or $scriptTagIdx -eq -1) {
 # Extract HTML body between </style> and <script>
 $bodyHtml = [string]::Join("`r`n", $lines[($styleCloseIdx + 1)..($scriptTagIdx - 1)])
 
-# Update themeSelect options inside HTML body
-$oldThemeSelectRegex = [regex]'(?s)<select id="themeSelect"[^>]*>.*?</select>'
-$newThemeSelect = @'
-<select id="themeSelect" class="theme-select">
-          <option value="simple-dark">🌑 심플 다크</option>
-          <option value="cyber-neon">⚡ 아케이드 네온</option>
-          <option value="deep-ocean">🌊 딥 오션</option>
-          <option value="matrix-terminal">💻 터미널 매트릭스</option>
-          <option value="royal-velvet">👑 로얄 벨벳</option>
-          <option value="clean-ice">❄️ 아이스 스노우</option>
-        </select>
-'@
-
-$bodyHtml = $oldThemeSelectRegex.Replace($bodyHtml, $newThemeSelect, 1)
-
 # Read fresh CSS
 $css = [System.IO.File]::ReadAllText((Join-Path $baseDir "css\style.css"), [System.Text.Encoding]::UTF8)
 
@@ -64,7 +49,8 @@ $sb = New-Object System.Text.StringBuilder
 [void]$sb.AppendLine("<head>")
 [void]$sb.AppendLine('  <meta charset="UTF-8" />')
 [void]$sb.AppendLine('  <meta name="viewport" content="width=device-width, initial-scale=1.0" />')
-[void]$sb.AppendLine("  <title>끄투 LITE · 실시간 끝말잇기</title>")
+$titleText = [System.Text.Encoding]::UTF8.GetString([byte[]]@(0xEB,0x81,0x84,0xED,0x88,0xAC,0x20,0x4C,0x49,0x54,0x45,0x20,0xC2,0xB7,0x20,0xEC,0x8B,0xA4,0xEC,0x8B,0x9C,0xEA,0xB0,0x84,0x20,0xEB,0x81,0x9D,0xEB,0xA7,0x90,0xEC,0x9E,0x87,0xEA,0xB8,0xB0))
+[void]$sb.AppendLine("  <title>$titleText</title>")
 [void]$sb.AppendLine("  <style>")
 [void]$sb.AppendLine($css)
 [void]$sb.AppendLine("  </style>")
@@ -92,7 +78,7 @@ $destFile = Get-ChildItem -Path $baseDir -Filter "*단일파일*.html" | Select-
 if ($destFile) {
     Copy-Item -LiteralPath $indexPath -Destination $destFile.FullName -Force
 } else {
-    Copy-Item -LiteralPath $indexPath -Destination (Join-Path $baseDir ([System.Text.Encoding]::UTF8.GetString([byte[]]@(0xEA,0x0B8,0x84,0xED,0x88,0xAC,0x2D,0xEB,0x8B,0xA8,0xEC,0x9D,0xBC,0xED,0x8C,0x8C,0xEC,0x9D,0xBC,0x2E,0x68,0x74,0x6D,0x6C)))) -Force
+    Copy-Item -LiteralPath $indexPath -Destination (Join-Path $baseDir ([System.Text.Encoding]::UTF8.GetString([byte[]]@(0xEB,0x81,0x84,0xED,0x88,0xAC,0x2D,0xEB,0x8B,0xA8,0xEC,0x9D,0xBC,0xED,0x8C,0x8C,0xEC,0x9D,0xBC,0x2E,0x68,0x74,0x6D,0x6C)))) -Force
 }
 
 Write-Host "Success! Bundled single-file index.html ($($finalHtml.Length) chars) with 6 new themes!"

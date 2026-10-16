@@ -1342,7 +1342,7 @@ const App = (() => {
       ? ` [어인정: ${injeongThemeObj ? injeongThemeObj.name : '커스텀'}]`
       : '';
 
-    room.game.lastBanner = `✅ ${activePlayer.nickname}: '${word}' (+${scoreDelta}점)${missionText} ➔ 다음: ${nextPlayer.nickname}님 차례!`;
+    room.game.lastBanner = `✅ ${activePlayer.nickname}: '${word}'${missionHits > 0 ? ' [🎯 미션]' : ''} ➔ 다음: ${nextPlayer.nickname}님 차례!`;
 
     const soundKey = missionHits > 0 ? 'WORD_MISSION' : 'WORD_OK';
     triggerRemoteSound(soundKey);
@@ -1350,7 +1350,7 @@ const App = (() => {
 
     sendRoomSystemChat(
       room.id,
-      `✨ [${activePlayer.nickname}] '${word}'${injeongTagText} (+${scoreDelta}점)${missionText} — 뜻: ${validation.entry.meaning}`
+      `✨ [${activePlayer.nickname}] '${word}'${injeongTagText}${missionHits > 0 ? ' [🎯 미션]' : ''} — 뜻: ${validation.entry.meaning}`
     );
 
     // 만약 한방단어 방지/매너모드가 꺼져 있고, 실제로 이어질 단어가 0개인 절대 한방단어를 성공시켰다면?
@@ -1419,15 +1419,19 @@ const App = (() => {
       return;
     }
 
+    // 실생활 고빈도 표준 명사(구체적인 뜻풀이가 있는 자연스러운 단어)를 1순위로 선정하여 봇이 억지/희귀어(발간색 등)를 내지 않도록 보장
+    const commonMatches = validCandidates.filter(e => e.isCommon && e.meaning && !e.meaning.startsWith('표준국어대사전 등재') && !e.isCustom);
+    const candidatePool = commonMatches.length > 0 ? commonMatches : validCandidates;
+
     // 난이도별 단어 선택
-    let chosenEntry = validCandidates[Math.floor(Math.random() * validCandidates.length)];
+    let chosenEntry = candidatePool[Math.floor(Math.random() * candidatePool.length)];
     if (currentPlayer.botLevel === 'HARD' && room.game.missionChar) {
-      const missionMatches = validCandidates.filter(e => e.word.includes(room.game.missionChar));
+      const missionMatches = candidatePool.filter(e => e.word.includes(room.game.missionChar));
       if (missionMatches.length > 0) {
         chosenEntry = missionMatches[Math.floor(Math.random() * missionMatches.length)];
       }
     } else if (currentPlayer.botLevel === 'EASY') {
-      const shortMatches = validCandidates.filter(e => e.word.length <= 3);
+      const shortMatches = candidatePool.filter(e => e.word.length <= 3);
       if (shortMatches.length > 0) {
         chosenEntry = shortMatches[Math.floor(Math.random() * shortMatches.length)];
       }
@@ -1596,8 +1600,15 @@ const App = (() => {
     document.getElementById('btnLeaveRoom').addEventListener('click', () => leaveCurrentRoom(false));
     document.getElementById('btnToggleSpectate').addEventListener('click', toggleSpectatorMode);
     document.getElementById('btnReadyOrStart').addEventListener('click', onReadyOrStartClick);
-    document.getElementById('btnRoomSettings').addEventListener('click', openEditRoomModal);
+    document.getElementById('btnRoomSettings').addEventListener('click', () => {
+      closeModal('roomManageModal');
+      openEditRoomModal();
+    });
     document.getElementById('btnCopyInviteLink')?.addEventListener('click', copyRoomInviteLink);
+
+    document.getElementById('btnOpenRoomManage')?.addEventListener('click', () => {
+      openModal('roomManageModal');
+    });
 
     const btnAddBot = document.getElementById('btnAddBot');
     if (btnAddBot) {
@@ -1950,7 +1961,7 @@ const App = (() => {
       const tagHtml = latestHist.isInjeong
         ? `<span class="injeong-tag" style="background:${themeObj ? themeObj.badgeColor : '#9333ea'};">어인정 · ${themeObj ? themeObj.name : '커스텀'}</span>`
         : `<span class="injeong-tag" style="background:#2563eb;">표준 명사</span>`;
-      meaningBar.innerHTML = `${tagHtml} <span>${escapeHtml(latestHist.meaning)} (+${latestHist.scoreDelta}점)</span>`;
+      meaningBar.innerHTML = `${tagHtml} <span>${escapeHtml(latestHist.meaning)}</span>`;
     } else {
       liveWordBox.textContent = isPlaying ? `${Hangul.formatTargetChar(room.game.targetChar, room.rules.dueum)}` : 'KKuTu LITE';
       meaningBar.innerHTML = `<span>${escapeHtml(room.game.lastBanner)}</span>`;
@@ -1970,21 +1981,31 @@ const App = (() => {
 
     // 1) 상단 방 정보 헤더
     document.getElementById('roomHeaderTitle').textContent = `#${room.id} ${room.title}`;
-    document.getElementById('roomHeaderMode').textContent = `${formatGameTypeLabel(room.rules.gameType)} · ${room.totalRounds}R · ${room.roundTime}초`;
-    document.getElementById('roomHeaderRuleBadges').innerHTML = buildRuleBadgesHTML(room.rules);
+    const injeongLabel = room.rules.injeong ? '어인정' : '표준';
+    document.getElementById('roomHeaderMode').textContent = `${formatGameTypeLabel(room.rules.gameType)} · ${room.totalRounds}R (${room.roundTime}초) · ${injeongLabel}`;
+    const ruleBadges = document.getElementById('roomHeaderRuleBadges');
+    if (ruleBadges) ruleBadges.style.display = 'none';
 
-    // 방장 전용 버튼 표시/숨김
-    const hostControls = document.getElementById('hostOnlyControls');
-    if (isHost && !isPlaying) {
-      hostControls.classList.remove('hidden');
-    } else {
-      hostControls.classList.add('hidden');
+    // 방장 전용 버튼 및 관리 모달 요소 제어
+    const addBotBtn = document.getElementById('btnAddBot');
+    if (addBotBtn) {
+      addBotBtn.style.display = (isHost && !isPlaying) ? 'inline-flex' : 'none';
+    }
+    const manageBotSection = document.getElementById('manageBotSection');
+    if (manageBotSection) {
+      manageBotSection.style.display = isHost ? 'block' : 'none';
+    }
+    const roomSettingsBtn = document.getElementById('btnRoomSettings');
+    if (roomSettingsBtn) {
+      roomSettingsBtn.style.display = isHost ? 'block' : 'none';
     }
 
     // 관전 전환 버튼
     const specBtn = document.getElementById('btnToggleSpectate');
-    specBtn.textContent = myUser.isSpectator ? '🎮 참가 전환' : '👁️ 관전 전환';
-    specBtn.disabled = isPlaying;
+    if (specBtn) {
+      specBtn.textContent = myUser.isSpectator ? '🎮 참가 전환' : '👁️ 관전 전환';
+      specBtn.disabled = isPlaying;
+    }
 
     // 시작 / 준비 버튼
     const startBtn = document.getElementById('btnReadyOrStart');
@@ -2004,16 +2025,18 @@ const App = (() => {
       startBtn.className = isReady ? 'btn btn-warning btn-sm' : 'btn btn-primary btn-sm';
     }
 
-    // 2) 관전자 스트립
+    // 2) 관전자 스트립 (관전자가 있을 때만 표시하여 화면 낭비 제거)
     const specBar = document.getElementById('spectatorStrip');
-    const specNames = room.spectators.map(s => `${s.avatar || '👁️'} ${escapeHtml(s.nickname)}`).join(', ');
-    document.getElementById('spectatorListText').innerHTML = room.spectators.length > 0
-      ? `👁️ <b>관전 중 (${room.spectators.length}명):</b> ${specNames}`
-      : `👁️ 현재 관전 중인 유저가 없습니다.`;
-    document.getElementById('mySpectatorBadge').textContent = myUser.isSpectator
-      ? '관전자 모드로 시청 중'
-      : '';
-    specBar.style.display = 'flex';
+    if (specBar) {
+      if (room.spectators.length > 0) {
+        specBar.style.display = 'flex';
+        const specNames = room.spectators.map(s => `${s.avatar || '👁️'} ${escapeHtml(s.nickname)}`).join(', ');
+        document.getElementById('spectatorListText').innerHTML = `👁️ <b>관전 중 (${room.spectators.length}명):</b> ${specNames}`;
+        document.getElementById('mySpectatorBadge').textContent = myUser.isSpectator ? '관전자 모드로 시청 중' : '';
+      } else {
+        specBar.style.display = 'none';
+      }
+    }
 
     // 3) 중앙 끄투 전광판 (Arena Board) + 원본 끄투 상단 라운드 제시어 글자 블록
     document.getElementById('arenaRoundText').textContent = `ROUND ${room.game.currentRound} / ${room.totalRounds}`;
@@ -2034,7 +2057,7 @@ const App = (() => {
       }
     }
 
-    // 히스토리 단어 체인 스트립
+    // 히스토리 단어 체인 스트립 (점수 숫자 제거하고 깔끔한 단어 체인만 표시)
     const histStrip = document.getElementById('wordHistoryStrip');
     if (room.game.history.length === 0) {
       histStrip.innerHTML = `<span style="font-size:12px; opacity:0.75;">이번 라운드에 입력된 단어가 체인으로 표시됩니다.</span>`;
@@ -2042,18 +2065,16 @@ const App = (() => {
       const recent = room.game.history.slice(-8);
       histStrip.innerHTML = recent.map((h, idx) => {
         const isLatest = idx === recent.length - 1;
-        return `<span class="history-chip ${isLatest ? 'latest' : ''}">${escapeHtml(h.word)} <small style="opacity:0.8;">+${h.scoreDelta}</small></span>`;
+        return `<span class="history-chip ${isLatest ? 'latest' : ''}">${escapeHtml(h.word)}</span>`;
       }).join('<span style="opacity:0.6;">➔</span>');
     }
 
-    // 제시 글자 & 두음법칙 표시 & 남은 연결 가능 단어 수
+    // 제시 글자 & 두음법칙 표시
     const targetMainEl = document.getElementById('targetCharMain');
     const targetSubEl = document.getElementById('targetSubInfo');
     if (isPlaying && room.game.targetChar) {
       targetMainEl.textContent = Hangul.formatTargetChar(room.game.targetChar, room.rules.dueum);
-      const usedSet = new Set(room.game.usedWords);
-      const remainCount = DictionaryEngine.getFollowUpWords(room.game.targetChar, room.rules, usedSet).length;
-      targetSubEl.textContent = `연결 가능: ${remainCount.toLocaleString()}개`;
+      targetSubEl.textContent = room.rules.dueum ? '두음법칙 ON' : '두음법칙 OFF';
     } else {
       targetMainEl.textContent = '대기중';
       targetSubEl.textContent = room.rules.dueum ? '두음법칙 ON' : '두음법칙 OFF';

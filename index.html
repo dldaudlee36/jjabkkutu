@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko" data-theme="simple-dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>?꾪닾 LITE 쨌 ?ㅼ떆媛??앸쭚?뉕린</title>
+  <title>끄투 LITE · 실시간 끝말잇기</title>
   <style>
 /* ============================================================
    KKuTu-Lite Multi-Theme Stylesheet (6 Distinct Themes)
@@ -1195,29 +1195,27 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 }
 
 .mission-bonus-hint {
-  font-size: 11px;
-  color: #fde047;
-  font-weight: 800;
-  white-space: nowrap;
+  display: none;
 }
 
 /* 이중 타이머 바 */
 .timers-wrap {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
+  padding: 2px 0;
 }
 
 .timer-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   white-space: nowrap;
 }
 
 .timer-label {
-  width: 72px;
-  font-size: 11.5px;
+  width: 62px;
+  font-size: 11px;
   font-weight: 800;
   color: var(--arena-sub);
   white-space: nowrap;
@@ -1226,9 +1224,9 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 
 .timer-track {
   flex: 1;
-  height: 13px;
+  height: 8px;
   background: rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -1657,6 +1655,7 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 </head>
 </head>
 </head>
+</head>
   
 </head>
 <body>
@@ -1675,12 +1674,12 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
       <div class="theme-picker-wrap" title="화면 테마 변경">
         <span>🎨 테마</span>
         <select id="themeSelect" class="theme-select">
-          <option value="simple-dark">?뙌 ?ы뵆 ?ㅽ겕</option>
-          <option value="cyber-neon">???꾩??대뱶 ?ㅼ삩</option>
-          <option value="deep-ocean">?뙄 ???ㅼ뀡</option>
-          <option value="matrix-terminal">?뮲 ?곕???留ㅽ듃由?뒪</option>
-          <option value="royal-velvet">?몣 濡쒖뻹 踰⑤껙</option>
-          <option value="clean-ice">?꾬툘 ?꾩씠???ㅻ끂??/option>
+          <option value="simple-dark">🌑 심플 다크</option>
+          <option value="cyber-neon">⚡ 아케이드 네온</option>
+          <option value="deep-ocean">🌊 딥 오션</option>
+          <option value="matrix-terminal">💻 터미널 매트릭스</option>
+          <option value="royal-velvet">👑 로얄 벨벳</option>
+          <option value="clean-ice">❄️ 아이스 스노우</option>
         </select>
       </div>
 
@@ -1798,27 +1797,15 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
         </div>
 
         <div class="room-header-controls">
-          <!-- 방장 전용 컨트롤 (깔끔한 단일 봇 추가/설정) -->
-          <div id="hostOnlyControls" class="host-controls-group">
-            <select id="botLevelSelect" class="form-control btn-sm" style="padding:4px 8px; height:30px;">
-              <option value="EASY">🐥 초보봇</option>
-              <option value="NORMAL" selected>🤖 숙련봇</option>
-              <option value="HARD">🐲 박사봇</option>
-            </select>
-            <button class="btn btn-outline btn-sm" id="btnAddBot">+봇 추가</button>
-            <button class="btn btn-outline btn-sm" id="btnRemoveBots">봇 제거</button>
-            <button class="btn btn-outline btn-sm" id="btnRoomSettings">⚙️ 방 설정</button>
-          </div>
-
-          <button class="btn btn-purple btn-sm" id="btnCopyInviteLink" title="친구들에게 전달할 1-클릭 자동 입장 링크 복사">🔗 링크 복사</button>
-          <button class="btn btn-outline btn-sm" id="btnToggleSpectate">👁️ 관전 전환</button>
+          <button class="btn btn-outline btn-sm" id="btnAddBot" title="AI 봇 플레이어 추가">+ 🤖 봇 추가</button>
+          <button class="btn btn-outline btn-sm" id="btnOpenRoomManage" title="방 설정 및 봇 관리">⚙️ 관리</button>
           <button class="btn btn-success btn-sm" id="btnReadyOrStart">🚀 게임 시작</button>
           <button class="btn btn-danger btn-sm" id="btnLeaveRoom">🚪 나가기</button>
         </div>
       </div>
 
       <!-- 관전자 표시 바 -->
-      <div class="spectator-bar" id="spectatorStrip">
+      <div class="spectator-bar" id="spectatorStrip" style="display:none;">
         <span id="spectatorListText">👁️ 관전자 없음</span>
         <b id="mySpectatorBadge"></b>
       </div>
@@ -1855,7 +1842,7 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
           <div class="mission-box">
             <div class="mission-label">🎯 미션 글자</div>
             <div class="mission-char" id="missionCharDisplay">가</div>
-            <div class="mission-bonus-hint">포함 시 +55점</div>
+            <div class="mission-bonus-hint" style="display:none;"></div>
           </div>
         </div>
 
@@ -1917,6 +1904,41 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   <!-- ==========================================
        모달 1: 방 만들기 / 방 설정 변경
        ========================================== -->
+    <!-- ==========================================
+       모달: 방 관리 & 부가 기능 통합 (조잡함 제거)
+       ========================================== -->
+  <div class="modal-backdrop hidden" id="roomManageModal">
+    <div class="modal-box modal-md">
+      <div class="modal-header">
+        <span>⚙️ 방 관리 및 설정</span>
+        <button class="btn btn-outline btn-sm" data-close-modal="roomManageModal">✕</button>
+      </div>
+      <div class="modal-body" style="display:flex; flex-direction:column; gap:14px;">
+        <!-- AI 봇 난이도 & 관리 (방장 전용) -->
+        <div id="manageBotSection" class="panel" style="padding:12px; background:rgba(0,0,0,0.22); border-radius:10px;">
+          <div style="font-weight:800; font-size:13px; margin-bottom:8px;">🤖 AI 봇 난이도 & 관리</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <select id="botLevelSelect" class="form-control btn-sm" style="flex:1; height:36px;">
+              <option value="EASY">🐥 초보봇 (쉬운 단어 위주)</option>
+              <option value="NORMAL" selected>🤖 숙련봇 (표준 단어 구사)</option>
+              <option value="HARD">🐲 박사봇 (전략적 어휘)</option>
+            </select>
+            <button class="btn btn-outline btn-sm" id="btnRemoveBots">🧹 봇 모두 퇴장</button>
+          </div>
+        </div>
+
+        <!-- 초대 링크 및 관전/참가 전환 -->
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-purple btn-sm" id="btnCopyInviteLink" style="flex:1; padding:10px; font-weight:800;">🔗 초대 링크 복사</button>
+          <button class="btn btn-outline btn-sm" id="btnToggleSpectate" style="flex:1; padding:10px; font-weight:800;">👁️ 관전/참가 전환</button>
+        </div>
+
+        <!-- 방 규칙 설정 변경 (방장 전용) -->
+        <button class="btn btn-primary" id="btnRoomSettings" style="padding:10px; font-weight:800;">⚙️ 방 규칙 & 라운드 시간 변경</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-backdrop hidden" id="createRoomModal">
     <div class="modal-box modal-lg">
       <div class="modal-header">
@@ -335035,35 +335057,82 @@ const DictionaryEngine = (() => {
     { word: "이웃집토토로", theme: "ANIME", meaning: "스튜디오 지브리의 대표 애니메이션 영화" },
     { word: "나혼자만레벨업", theme: "ANIME", meaning: "인기 판타지 웹소설 및 웹툰/애니메이션" },
     { word: "신의탑", theme: "ANIME", meaning: "네이버 판타지 웹툰" },
+    { word: "체인소맨", theme: "ANIME", meaning: "후지모토 타츠키의 다크 판타지 소년 만화" },
+    { word: "봇치더록", theme: "ANIME", meaning: "밴드를 주제로 한 인기 청춘 음악 애니메이션" },
+    { word: "최애의아이", theme: "ANIME", meaning: "연예계를 무대로 한 서스펜스 환생 만화" },
+    { word: "스파이패밀리", theme: "ANIME", meaning: "스파이·암살자·초능력자 위장 가족 코미디" },
+    { word: "장송의프리렌", theme: "ANIME", meaning: "용사 파티 마법사의 후일담 판타지 만화" },
+    { word: "하이큐", theme: "ANIME", meaning: "고교 배구를 다룬 인기 스포츠 만화" },
+    { word: "슬램덩크", theme: "ANIME", meaning: "이노우에 타케히코의 전설적인 농구 만화" },
+    { word: "강철의연금술사", theme: "ANIME", meaning: "아라카와 히로무의 다크 판타지 만화" },
+    { word: "데스노트", theme: "ANIME", meaning: "이름을 적으면 죽는 공책을 둘러싼 두뇌 싸움 만화" },
+    { word: "블리치", theme: "ANIME", meaning: "사신 쿠로사키 이치고의 액션 배틀 만화" },
+    { word: "은혼", theme: "ANIME", meaning: "에도 시대를 배경으로 한 SF 시대극 코미디 만화" },
+    { word: "전지적독자시점", theme: "ANIME", meaning: "멸망한 소설의 세계를 구하는 판타지 웹소설/웹툰" },
+    { word: "화산귀환", theme: "ANIME", meaning: "화산파를 다시 일으키는 검협 청명의 무협 웹소설/웹툰" },
+    { word: "하울의움직이는성", theme: "ANIME", meaning: "스튜디오 지브리의 미야자키 하야오 애니메이션 영화" },
+    { word: "센과치히로", theme: "ANIME", meaning: "신들의 세계에 들어간 치히로의 모험 애니메이션" },
     { word: "방탄소년단", theme: "POP", meaning: "대한민국의 7인조 글로벌 보이그룹 (BTS)" },
     { word: "블랙핑크", theme: "POP", meaning: "대한민국의 4인조 글로벌 걸그룹" },
     { word: "뉴진스", theme: "POP", meaning: "대한민국의 5인조 걸그룹" },
     { word: "아이유", theme: "POP", meaning: "대한민국의 싱어송라이터이자 배우" },
     { word: "에스파", theme: "POP", meaning: "SM엔터테인먼트 소속 4인조 걸그룹" },
     { word: "아이브", theme: "POP", meaning: "스타쉽엔터테인먼트 소속 6인조 걸그룹" },
+    { word: "르세라핌", theme: "POP", meaning: "쏘스뮤직 소속 5인조 다국적 걸그룹" },
+    { word: "트와이스", theme: "POP", meaning: "JYP엔터테인먼트 소속 9인조 걸그룹" },
+    { word: "아일릿", theme: "POP", meaning: "빌리프랩 소속 5인조 다국적 걸그룹" },
+    { word: "엔믹스", theme: "POP", meaning: "JYP엔터테인먼트 소속 6인조 믹스팝 걸그룹" },
     { word: "세븐틴", theme: "POP", meaning: "플레디스 소속 13인조 보이그룹" },
+    { word: "스트레이키즈", theme: "POP", meaning: "JYP엔터테인먼트 소속 8인조 자체제작 보이그룹" },
+    { word: "라이즈", theme: "POP", meaning: "SM엔터테인먼트 소속 보이그룹" },
+    { word: "투모로우바이투게더", theme: "POP", meaning: "빅히트 뮤직 소속 5인조 보이그룹" },
+    { word: "엔하이픈", theme: "POP", meaning: "빌리프랩 소속 7인조 다국적 보이그룹" },
+    { word: "플레이브", theme: "POP", meaning: "블래스트 소속 5인조 버추얼 보이그룹" },
     { word: "데이식스", theme: "POP", meaning: "JYP엔터테인먼트 소속 4인조 밴드" },
+    { word: "지드래곤", theme: "POP", meaning: "빅뱅의 리더이자 대한민국의 래퍼·프로듀서" },
+    { word: "임영웅", theme: "POP", meaning: "대한민국의 대표 트로트·발라드 가수" },
     { word: "무한도전", theme: "POP", meaning: "MBC의 리얼 버라이어티 예능 프로그램" },
     { word: "런닝맨", theme: "POP", meaning: "SBS의 대표 일요 버라이어티 예능 프로그램" },
+    { word: "침착맨", theme: "POP", meaning: "웹툰 작가 이말년의 인터넷 방송 크리에이터 채널" },
+    { word: "슈카월드", theme: "POP", meaning: "경제·시사 유튜브 크리에이터 채널" },
     { word: "오징어게임", theme: "POP", meaning: "넷플릭스 오리지널 한국 서바이벌 드라마" },
     { word: "기생충", theme: "POP", meaning: "봉준호 감독의 아카데미 작품상 수상 영화" },
+    { word: "서울의봄", theme: "POP", meaning: "12·12 군사반란을 다룬 대한민국 천만 영화" },
+    { word: "파묘", theme: "POP", meaning: "장재현 감독의 오컬트 미스터리 천만 영화" },
     { word: "어벤져스", theme: "POP", meaning: "마블 시네마틱 유니버스의 슈퍼히어로 영화 시리즈" },
     { word: "아이언맨", theme: "POP", meaning: "마블 코믹스의 히어로 토니 스타크" },
     { word: "스파이더맨", theme: "POP", meaning: "마블 코믹스의 거미 능력 슈퍼히어로" },
     { word: "해리포터", theme: "POP", meaning: "판타지 소설 및 영화 시리즈" },
     { word: "민트초코", theme: "FOOD_BRAND", meaning: "민트 향에 초콜릿 칩을 섞은 디저트 맛" },
     { word: "마라탕", theme: "FOOD_BRAND", meaning: "쓰촨 지역의 얼얼하고 매운 향신료 국물 요리" },
+    { word: "마라샹궈", theme: "FOOD_BRAND", meaning: "마라 소스에 다양한 재료를 볶아 먹는 사천 요리" },
     { word: "탕후루", theme: "FOOD_BRAND", meaning: "과일에 설탕 시럽을 입혀 굳힌 간식" },
     { word: "엽기떡볶이", theme: "FOOD_BRAND", meaning: "매운맛으로 유명한 분식 프랜차이즈" },
+    { word: "마라엽떡", theme: "FOOD_BRAND", meaning: "마라와 떡볶이를 결합한 인기 메뉴" },
+    { word: "로제떡볶이", theme: "FOOD_BRAND", meaning: "크림과 고추장을 섞어 부드럽고 매콤한 떡볶이" },
     { word: "뿌링클", theme: "FOOD_BRAND", meaning: "치즈 시즈닝을 뿌린 인기 치킨 메뉴" },
+    { word: "황금올리브", theme: "FOOD_BRAND", meaning: "BBQ의 대표 올리브유 후라이드 치킨" },
     { word: "불닭볶음면", theme: "FOOD_BRAND", meaning: "삼양식품의 매운 볶음 라면 브랜드" },
     { word: "신라면", theme: "FOOD_BRAND", meaning: "농심의 대표 매운 국물 라면" },
+    { word: "진라면", theme: "FOOD_BRAND", meaning: "오뚜기의 대표 국물 라면" },
+    { word: "짜파게티", theme: "FOOD_BRAND", meaning: "농심의 대표 짜장 인스턴트 라면" },
     { word: "초코파이", theme: "FOOD_BRAND", meaning: "마시멜로를 넣은 빵에 초콜릿을 코팅한 과자" },
     { word: "새우깡", theme: "FOOD_BRAND", meaning: "새우를 넣어 만든 대한민국의 대표 스낵 과자" },
+    { word: "허니버터칩", theme: "FOOD_BRAND", meaning: "버터와 꿀 맛의 선풍적 인기를 끈 감자칩" },
+    { word: "소금빵", theme: "FOOD_BRAND", meaning: "버터 풍미에 굵은 소금을 올린 인기 빵" },
+    { word: "크로플", theme: "FOOD_BRAND", meaning: "크루아상 반죽을 와플 기계에 구운 디저트" },
     { word: "코카콜라", theme: "FOOD_BRAND", meaning: "전 세계적으로 판매되는 대표 탄산음료 브랜드" },
     { word: "스타벅스", theme: "FOOD_BRAND", meaning: "세계 최대 규모의 커피 전문점 프랜차이즈" },
+    { word: "메가커피", theme: "FOOD_BRAND", meaning: "대한민국의 대용량 가성비 커피 프랜차이즈" },
+    { word: "컴포즈커피", theme: "FOOD_BRAND", meaning: "대한민국의 대중적인 테이크아웃 커피 프랜차이즈" },
+    { word: "배스킨라빈스", theme: "FOOD_BRAND", meaning: "세계적인 프리미엄 아이스크림 프랜차이즈" },
     { word: "맥도날드", theme: "FOOD_BRAND", meaning: "글로벌 패스트푸드 햄버거 프랜차이즈" },
+    { word: "버거킹", theme: "FOOD_BRAND", meaning: "직화 와퍼로 유명한 햄버거 프랜차이즈" },
     { word: "배달의민족", theme: "FOOD_BRAND", meaning: "대한민국의 대표 음식 배달 플랫폼" },
+    { word: "당근마켓", theme: "FOOD_BRAND", meaning: "지역 기반 중고거래 모바일 커뮤니티" },
+    { word: "쿠팡", theme: "FOOD_BRAND", meaning: "대한민국의 로켓배송 이커머스 기업" },
+    { word: "올리브영", theme: "FOOD_BRAND", meaning: "대한민국의 헬스 앤 뷰티 스토어 프랜차이즈" },
+    { word: "다이소", theme: "FOOD_BRAND", meaning: "균일가 생활용품 전문 유통 체인" },
     { word: "카카오톡", theme: "FOOD_BRAND", meaning: "카카오가 서비스하는 모바일 메신저" },
     { word: "유튜브", theme: "FOOD_BRAND", meaning: "구글이 운영하는 세계 최대 동영상 공유 플랫폼" },
     { word: "인스타그램", theme: "FOOD_BRAND", meaning: "사진 및 동영상 공유 소셜 미디어 플랫폼" },
@@ -335077,11 +335146,21 @@ const DictionaryEngine = (() => {
     { word: "오운완", theme: "MEME", meaning: "오늘 운동 완료의 줄임말" },
     { word: "갓생", theme: "MEME", meaning: "부지런하고 모범적인 삶을 뜻하는 신조어" },
     { word: "억까", theme: "MEME", meaning: "억지로 까내리기 또는 불운이 겹치는 상황을 뜻하는 속어" },
+    { word: "폼미쳤다", theme: "MEME", meaning: "기량이나 활약이 엄청나다는 찬사의 유행어" },
+    { word: "누칼협", theme: "MEME", meaning: "누가 칼 들고 협박했냐의 줄임말" },
+    { word: "알잘딱깔센", theme: "MEME", meaning: "알아서 잘 딱 깔끔하고 센스있게의 줄임말" },
+    { word: "가스라이팅", theme: "MEME", meaning: "타인의 심리를 조작해 지배력을 행사하는 행위" },
     { word: "내로남불", theme: "MEME", meaning: "내가 하면 로맨스 남이 하면 불륜의 줄임말" },
     { word: "소확행", theme: "MEME", meaning: "소소하지만 확실한 행복의 줄임말" },
     { word: "워라밸", theme: "MEME", meaning: "일과 삶의 균형의 줄임말" },
     { word: "번아웃", theme: "MEME", meaning: "극도의 피로로 무기력해지는 현상" },
     { word: "흑역사", theme: "MEME", meaning: "없었던 일로 하고 싶거나 부끄러운 과거" },
+    { word: "킹받네", theme: "MEME", meaning: "열받네를 유쾌하게 강조하는 인터넷 신조어" },
+    { word: "극혐", theme: "MEME", meaning: "극도로 혐오함의 줄임말" },
+    { word: "현타", theme: "MEME", meaning: "현실 자각 타임의 줄임말" },
+    { word: "뇌절", theme: "MEME", meaning: "선을 넘어 똑같은 말이나 행동을 과하게 반복함" },
+    { word: "어쩔티비", theme: "MEME", meaning: "어쩌라고 가서 TV나 봐의 초등학생 유행어" },
+    { word: "엄준식", theme: "MEME", meaning: "인터넷 밈으로 널리 퍼진 이름 유행어" },
     { word: "세종대왕", theme: "GEO_HISTORY", meaning: "훈민정음을 창제한 조선 제4대 국왕" },
     { word: "이순신", theme: "GEO_HISTORY", meaning: "임진왜란 때 해전을 승리로 이끈 조선의 명장" },
     { word: "광개토대왕", theme: "GEO_HISTORY", meaning: "고구려의 전성기를 이끈 제19대 국왕" },
@@ -335399,6 +335478,16 @@ const DictionaryEngine = (() => {
           theme: 'STANDARD',
           isCustom: false,
           isCommon: false
+        };
+      } else if (rules.injeong && word.length >= 2 && word.length <= 8 && Hangul.isHangulWord(word)) {
+        // 어인정 모드: 플레이어가 입력한 대중문화·게임·애니·신조어·브랜드·인명 폭넓게 인정!
+        entry = {
+          word,
+          meaning: '어인정 인정 어휘',
+          isInjeong: true,
+          theme: 'CUSTOM',
+          isCustom: false,
+          isCommon: true
         };
       } else {
         return {
@@ -336934,7 +337023,7 @@ const App = (() => {
       ? ` [어인정: ${injeongThemeObj ? injeongThemeObj.name : '커스텀'}]`
       : '';
 
-    room.game.lastBanner = `✅ ${activePlayer.nickname}: '${word}' (+${scoreDelta}점)${missionText} ➔ 다음: ${nextPlayer.nickname}님 차례!`;
+    room.game.lastBanner = `✅ ${activePlayer.nickname}: '${word}'${missionHits > 0 ? ' [🎯 미션]' : ''} ➔ 다음: ${nextPlayer.nickname}님 차례!`;
 
     const soundKey = missionHits > 0 ? 'WORD_MISSION' : 'WORD_OK';
     triggerRemoteSound(soundKey);
@@ -336942,7 +337031,7 @@ const App = (() => {
 
     sendRoomSystemChat(
       room.id,
-      `✨ [${activePlayer.nickname}] '${word}'${injeongTagText} (+${scoreDelta}점)${missionText} — 뜻: ${validation.entry.meaning}`
+      `✨ [${activePlayer.nickname}] '${word}'${injeongTagText}${missionHits > 0 ? ' [🎯 미션]' : ''} — 뜻: ${validation.entry.meaning}`
     );
 
     // 만약 한방단어 방지/매너모드가 꺼져 있고, 실제로 이어질 단어가 0개인 절대 한방단어를 성공시켰다면?
@@ -337192,8 +337281,15 @@ const App = (() => {
     document.getElementById('btnLeaveRoom').addEventListener('click', () => leaveCurrentRoom(false));
     document.getElementById('btnToggleSpectate').addEventListener('click', toggleSpectatorMode);
     document.getElementById('btnReadyOrStart').addEventListener('click', onReadyOrStartClick);
-    document.getElementById('btnRoomSettings').addEventListener('click', openEditRoomModal);
+    document.getElementById('btnRoomSettings').addEventListener('click', () => {
+      closeModal('roomManageModal');
+      openEditRoomModal();
+    });
     document.getElementById('btnCopyInviteLink')?.addEventListener('click', copyRoomInviteLink);
+
+    document.getElementById('btnOpenRoomManage')?.addEventListener('click', () => {
+      openModal('roomManageModal');
+    });
 
     const btnAddBot = document.getElementById('btnAddBot');
     if (btnAddBot) {
@@ -337546,7 +337642,7 @@ const App = (() => {
       const tagHtml = latestHist.isInjeong
         ? `<span class="injeong-tag" style="background:${themeObj ? themeObj.badgeColor : '#9333ea'};">어인정 · ${themeObj ? themeObj.name : '커스텀'}</span>`
         : `<span class="injeong-tag" style="background:#2563eb;">표준 명사</span>`;
-      meaningBar.innerHTML = `${tagHtml} <span>${escapeHtml(latestHist.meaning)} (+${latestHist.scoreDelta}점)</span>`;
+      meaningBar.innerHTML = `${tagHtml} <span>${escapeHtml(latestHist.meaning)}</span>`;
     } else {
       liveWordBox.textContent = isPlaying ? `${Hangul.formatTargetChar(room.game.targetChar, room.rules.dueum)}` : 'KKuTu LITE';
       meaningBar.innerHTML = `<span>${escapeHtml(room.game.lastBanner)}</span>`;
@@ -337566,21 +337662,31 @@ const App = (() => {
 
     // 1) 상단 방 정보 헤더
     document.getElementById('roomHeaderTitle').textContent = `#${room.id} ${room.title}`;
-    document.getElementById('roomHeaderMode').textContent = `${formatGameTypeLabel(room.rules.gameType)} · ${room.totalRounds}R · ${room.roundTime}초`;
-    document.getElementById('roomHeaderRuleBadges').innerHTML = buildRuleBadgesHTML(room.rules);
+    const injeongLabel = room.rules.injeong ? '어인정' : '표준';
+    document.getElementById('roomHeaderMode').textContent = `${formatGameTypeLabel(room.rules.gameType)} · ${room.totalRounds}R (${room.roundTime}초) · ${injeongLabel}`;
+    const ruleBadges = document.getElementById('roomHeaderRuleBadges');
+    if (ruleBadges) ruleBadges.style.display = 'none';
 
-    // 방장 전용 버튼 표시/숨김
-    const hostControls = document.getElementById('hostOnlyControls');
-    if (isHost && !isPlaying) {
-      hostControls.classList.remove('hidden');
-    } else {
-      hostControls.classList.add('hidden');
+    // 방장 전용 버튼 및 관리 모달 요소 제어
+    const addBotBtn = document.getElementById('btnAddBot');
+    if (addBotBtn) {
+      addBotBtn.style.display = (isHost && !isPlaying) ? 'inline-flex' : 'none';
+    }
+    const manageBotSection = document.getElementById('manageBotSection');
+    if (manageBotSection) {
+      manageBotSection.style.display = isHost ? 'block' : 'none';
+    }
+    const roomSettingsBtn = document.getElementById('btnRoomSettings');
+    if (roomSettingsBtn) {
+      roomSettingsBtn.style.display = isHost ? 'block' : 'none';
     }
 
     // 관전 전환 버튼
     const specBtn = document.getElementById('btnToggleSpectate');
-    specBtn.textContent = myUser.isSpectator ? '🎮 참가 전환' : '👁️ 관전 전환';
-    specBtn.disabled = isPlaying;
+    if (specBtn) {
+      specBtn.textContent = myUser.isSpectator ? '🎮 참가 전환' : '👁️ 관전 전환';
+      specBtn.disabled = isPlaying;
+    }
 
     // 시작 / 준비 버튼
     const startBtn = document.getElementById('btnReadyOrStart');
@@ -337600,16 +337706,18 @@ const App = (() => {
       startBtn.className = isReady ? 'btn btn-warning btn-sm' : 'btn btn-primary btn-sm';
     }
 
-    // 2) 관전자 스트립
+    // 2) 관전자 스트립 (관전자가 있을 때만 표시하여 화면 낭비 제거)
     const specBar = document.getElementById('spectatorStrip');
-    const specNames = room.spectators.map(s => `${s.avatar || '👁️'} ${escapeHtml(s.nickname)}`).join(', ');
-    document.getElementById('spectatorListText').innerHTML = room.spectators.length > 0
-      ? `👁️ <b>관전 중 (${room.spectators.length}명):</b> ${specNames}`
-      : `👁️ 현재 관전 중인 유저가 없습니다.`;
-    document.getElementById('mySpectatorBadge').textContent = myUser.isSpectator
-      ? '관전자 모드로 시청 중'
-      : '';
-    specBar.style.display = 'flex';
+    if (specBar) {
+      if (room.spectators.length > 0) {
+        specBar.style.display = 'flex';
+        const specNames = room.spectators.map(s => `${s.avatar || '👁️'} ${escapeHtml(s.nickname)}`).join(', ');
+        document.getElementById('spectatorListText').innerHTML = `👁️ <b>관전 중 (${room.spectators.length}명):</b> ${specNames}`;
+        document.getElementById('mySpectatorBadge').textContent = myUser.isSpectator ? '관전자 모드로 시청 중' : '';
+      } else {
+        specBar.style.display = 'none';
+      }
+    }
 
     // 3) 중앙 끄투 전광판 (Arena Board) + 원본 끄투 상단 라운드 제시어 글자 블록
     document.getElementById('arenaRoundText').textContent = `ROUND ${room.game.currentRound} / ${room.totalRounds}`;
@@ -337630,7 +337738,7 @@ const App = (() => {
       }
     }
 
-    // 히스토리 단어 체인 스트립
+    // 히스토리 단어 체인 스트립 (점수 숫자 제거하고 깔끔한 단어 체인만 표시)
     const histStrip = document.getElementById('wordHistoryStrip');
     if (room.game.history.length === 0) {
       histStrip.innerHTML = `<span style="font-size:12px; opacity:0.75;">이번 라운드에 입력된 단어가 체인으로 표시됩니다.</span>`;
@@ -337638,18 +337746,16 @@ const App = (() => {
       const recent = room.game.history.slice(-8);
       histStrip.innerHTML = recent.map((h, idx) => {
         const isLatest = idx === recent.length - 1;
-        return `<span class="history-chip ${isLatest ? 'latest' : ''}">${escapeHtml(h.word)} <small style="opacity:0.8;">+${h.scoreDelta}</small></span>`;
+        return `<span class="history-chip ${isLatest ? 'latest' : ''}">${escapeHtml(h.word)}</span>`;
       }).join('<span style="opacity:0.6;">➔</span>');
     }
 
-    // 제시 글자 & 두음법칙 표시 & 남은 연결 가능 단어 수
+    // 제시 글자 & 두음법칙 표시
     const targetMainEl = document.getElementById('targetCharMain');
     const targetSubEl = document.getElementById('targetSubInfo');
     if (isPlaying && room.game.targetChar) {
       targetMainEl.textContent = Hangul.formatTargetChar(room.game.targetChar, room.rules.dueum);
-      const usedSet = new Set(room.game.usedWords);
-      const remainCount = DictionaryEngine.getFollowUpWords(room.game.targetChar, room.rules, usedSet).length;
-      targetSubEl.textContent = `연결 가능: ${remainCount.toLocaleString()}개`;
+      targetSubEl.textContent = room.rules.dueum ? '두음법칙 ON' : '두음법칙 OFF';
     } else {
       targetMainEl.textContent = '대기중';
       targetSubEl.textContent = room.rules.dueum ? '두음법칙 ON' : '두음법칙 OFF';

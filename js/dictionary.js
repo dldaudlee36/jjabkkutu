@@ -32,10 +32,26 @@ const DictionaryEngine = (() => {
     10: ['아이스크림가게사장님', '고속터미널기차여행길', '무지개다리너머하늘빛']
   };
 
+  // 비표준어, 왜곡된 합성어, 북한어 및 끝말잇기 부적격 단어 차단 목록
+  const BANNED_NON_STANDARD_WORDS = new Set([
+    // '발간색', '노라발간색' 등 비표준 색채어 및 북한어
+    '발간색', '노라발간색', '가만색', '감은색', '재간색',
+    '검은색티티', '노란색티티', '보라색거적말', '빨간색고치', '파란색고치', '하얀색고치',
+    '파란빛깔색', '붉은빛색', '퍼런색', '누런색', '누런빛색', '하얀빛색', '까만빛색',
+    // 억지 조어 및 비표준 방언
+    '발간빛색', '발간수', '발강강의', '가가붓자식', '가간사', '가말때기', '가맛목', '가맛바가지',
+    // 부사/감탄사 등 명사가 아닌 낱말 오등재
+    '가만히', '가만사뿐', '가만뵈', '발각발각'
+  ]);
+
   // 기본 일반 명사 사전 (뜻풀이 내장 & AI 봇 및 매너모드 기준 풀)
   const RAW_STANDARD_WORDS = [
     "가방:물건을 넣어 들거나 메고 다니는 도구", "가족:부부를 중심으로 한 친족 관계의 집단", "가을:사계절 가운데 셋째 철", "가수:노래를 부르는 것이 직업인 사람",
-    "가위:종이나 천 따위를 자르는 도구", "거울:물체의 모양을 비추어 보는 물건", "거미:절지동물 거미류의 총칭", "건물:사람이 살거나 일을 하기 위하여 지은 집",
+    "가위:종이나 천 따위를 자르는 도구", "가격:물건이 지니고 있는 가치를 돈으로 나타낸 것", "가게:물건을 파는 집", "가능:어떤 일을 하거나 이룰 수 있음",
+    "간식:끼니와 끼니 사이에 간단히 먹는 음식", "간장:음식의 간을 맞추는 데 쓰는 짠 장", "간판:상호나 광고를 적어 사람 눈에 띄게 건 판",
+    "간호사:환자를 돌보고 간호하는 전문 의료 인력", "간접:중간에 다른 사람이나 사물을 거치는 관계", "간격:사물과 사물 사이의 틈이나 시간적 사이",
+    "간소:간단하고 소박함", "간절:마음속에서 간곡하게 바라는 정성",
+    "거울:물체의 모양을 비추어 보는 물건", "거미:절지동물 거미류의 총칭", "건물:사람이 살거나 일을 하기 위하여 지은 집",
     "건강:정신적으로나 육체적으로 아무 탈이 없고 튼튼함", "게임:규칙을 정해 놓고 승부를 겨루는 놀이", "겨울:사계절 가운데 넷째 철", "결과:원인으로 말미암아 이루어진 결말",
     "결혼:남녀가 부부 관계를 맺음", "경찰:사회 공공의 안녕과 질서를 유지하는 기관", "계단:오르내리기 위하여 만든 층계", "계절:일 년을 자연 현상에 따라 구분한 시기",
     "고양이:고양잇과의 포유류 반려동물", "고래:고래목의 포유류를 통틀어 이르는 말", "고구마:메꽃과의 여러해살이 뿌리채소", "고속도로:자동차 전용의 고속 주행 도로",
@@ -100,8 +116,15 @@ const DictionaryEngine = (() => {
     "민들레:국화과의 여러해살이풀", "밀가루:밀을 빻아 만든 가루",
     "바다:지구 위에서 육지를 제외한 짠물이 고여 있는 넓은 곳", "바람:기압의 변화로 공기가 움직이는 현상", "바나나:파초과의 열대 과일",
     "바지:하반신에 입는 옷", "바위:부피가 아주 큰 돌", "바이올린:네 개의 현을 가진 찰현악기", "박물관:고고학적 자료나 역사적 유물을 진열·보관하는 곳",
-    "박쥐:박쥐목의 포유류", "박수:두 손바닥을 마주쳐 소리를 내는 일", "반지:손가락에 끼는 고리 모양의 장신구", "반찬:밥에 곁들여 먹는 음식",
-    "반딧불이:반딧불잇과의 곤충으로 빛을 내는 벌레", "발가락:발의 끝에서 갈라진 다섯 부분", "발명:전에 없던 물건이나 방법을 새로 생각해 냄",
+    "반딧불이:반딧불잇과의 곤충으로 빛을 내는 벌레",
+    "발걸음:발을 떼어 놓으며 걷는 동작", "발달:신체나 지능, 기술 등이 높은 상태로 나아감", "발표:어떤 사실이나 연구 결과를 세상에 널리 알림",
+    "발견:아직 찾아내지 못했던 사물이나 사실을 찾아냄", "발생:어떤 일이나 사물이 생겨남", "발전:더 나은 상태나 높은 단계로 나아감",
+    "발목:다리와 발이 이어지는 관절 부위", "발톱:발가락 끝의 단단한 각질판", "발언:어떤 문제에 대하여 말을 함 또는 그 말",
+    "발송:우편물이나 물품을 우송편으로 보냄", "발굴:땅속이나 옛터에 묻힌 것을 파냄", "발효:효모나 미생물의 작용으로 유기물이 분해·변화함",
+    "발휘:재능이나 힘을 떨쳐 나타냄", "발자취:발로 밟고 지나간 흔적이나 업적", "발단:어떤 사건이나 일이 일어나는 첫 계기",
+    "발권:승차권이나 입장권 등을 발행함", "발차기:발로 차는 공격 기술이나 동작", "발열:체온이 비정상적으로 높아져 열이 남",
+    "발작:병이나 감정이 갑작스럽게 격렬히 일어남", "발포:총포나 탄약을 쏨", "발등:발의 위쪽 면",
+    "발가락:발의 끝에서 갈라진 다섯 부분", "발명:전에 없던 물건이나 방법을 새로 생각해 냄",
     "발자국:발로 밟은 자리에 남은 모양", "밤하늘:밤의 하늘", "밥상:밥을 차려 놓은 상", "방학:학교에서 일정 기간 수업을 쉬는 일",
     "방송:라디오나 텔레비전을 통해 소식이나 프로그램을 내보냄", "방향:어떤 방위를 향한 쪽", "배추:십자화과의 두해살이 잎채소", "배구:네트를 사이에 두고 공을 쳐 넘기는 구기",
     "배낭:등에 지고 다니는 가방", "백화점:여러 가지 상품을 부문별로 진열해 파는 대형 상점", "백조:오릿과의 겨울 철새 고니", "백과사전:온갖 지식과 사항을 망라하여 풀이한 사전",
@@ -118,8 +141,10 @@ const DictionaryEngine = (() => {
     "사랑:어떤 사람이나 존재를 몹시 아끼고 귀중히 여기는 마음", "사진:사물의 형상을 감광재나 이미지 센서로 찍어 낸 것", "사전:단어를 모아 일정한 순서로 배열하고 풀이한 책",
     "사막:강수량이 매우 적어 식물이 자라기 힘든 모래 땅", "산책:기분을 전환하기 위해 천천히 걷는 일", "산소:생물의 호흡에 꼭 필요한 기체 원소",
     "살구:살구나무의 열매", "삼각형:세 개의 선분으로 둘러싸인 도형", "삼겹살:돼지의 갈비 부근에 붙은 살코기와 비계가 세 겹으로 된 고기",
-    "상자:물건을 넣어 두는 네모난 그릇", "상어:상어류의 바닷물고기", "상상:실제로 경험하지 않은 현상이나 사물을 머릿속으로 그려 봄",
-    "새벽:날이 밝을 무렵", "색종이:여러 가지 빛깔로 물들인 종이", "색연필:색깔 있는 심을 넣은 연필", "생각:머리를 써서 사물을 헤아리고 판단하는 작용",
+    "새벽:날이 밝을 무렵",
+    "색깔:물체가 빛을 받아 눈에 맺히는 빛깔", "색채:물체가 띠는 빛깔과 색조",
+    "색소:생물체나 물질에 색을 띠게 하는 성분", "색동:여러 빛깔의 헝겊을 잇대어 만든 전통 옷이나 무늬",
+    "색종이:여러 가지 빛깔로 물들인 종이", "색연필:색깔 있는 심을 넣은 연필", "생각:머리를 써서 사물을 헤아리고 판단하는 작용",
     "생일:세상에 태어난 날", "생선:먹기 위하여 잡은 신선한 물고기", "서울:대한민국의 수도", "서점:책을 파는 가게", "선물:남에게 정성으로 물건을 주거나 그 물건",
     "선생님:학생을 가르치는 사람을 높여 부르는 말", "선풍기:전동기로 날개를 돌려 바람을 일으키는 가전제품", "설탕:사탕수수나 사탕무에서 짜낸 단맛의 조미료",
     "설날:음력 정월 초하룻날 명절", "성격:개인이 가지고 있는 고유의 성질이나 품성", "성공:목적하는 바를 이룸", "세계:지구상의 모든 나라와 지역",
@@ -334,35 +359,82 @@ const DictionaryEngine = (() => {
     { word: "이웃집토토로", theme: "ANIME", meaning: "스튜디오 지브리의 대표 애니메이션 영화" },
     { word: "나혼자만레벨업", theme: "ANIME", meaning: "인기 판타지 웹소설 및 웹툰/애니메이션" },
     { word: "신의탑", theme: "ANIME", meaning: "네이버 판타지 웹툰" },
+    { word: "체인소맨", theme: "ANIME", meaning: "후지모토 타츠키의 다크 판타지 소년 만화" },
+    { word: "봇치더록", theme: "ANIME", meaning: "밴드를 주제로 한 인기 청춘 음악 애니메이션" },
+    { word: "최애의아이", theme: "ANIME", meaning: "연예계를 무대로 한 서스펜스 환생 만화" },
+    { word: "스파이패밀리", theme: "ANIME", meaning: "스파이·암살자·초능력자 위장 가족 코미디" },
+    { word: "장송의프리렌", theme: "ANIME", meaning: "용사 파티 마법사의 후일담 판타지 만화" },
+    { word: "하이큐", theme: "ANIME", meaning: "고교 배구를 다룬 인기 스포츠 만화" },
+    { word: "슬램덩크", theme: "ANIME", meaning: "이노우에 타케히코의 전설적인 농구 만화" },
+    { word: "강철의연금술사", theme: "ANIME", meaning: "아라카와 히로무의 다크 판타지 만화" },
+    { word: "데스노트", theme: "ANIME", meaning: "이름을 적으면 죽는 공책을 둘러싼 두뇌 싸움 만화" },
+    { word: "블리치", theme: "ANIME", meaning: "사신 쿠로사키 이치고의 액션 배틀 만화" },
+    { word: "은혼", theme: "ANIME", meaning: "에도 시대를 배경으로 한 SF 시대극 코미디 만화" },
+    { word: "전지적독자시점", theme: "ANIME", meaning: "멸망한 소설의 세계를 구하는 판타지 웹소설/웹툰" },
+    { word: "화산귀환", theme: "ANIME", meaning: "화산파를 다시 일으키는 검협 청명의 무협 웹소설/웹툰" },
+    { word: "하울의움직이는성", theme: "ANIME", meaning: "스튜디오 지브리의 미야자키 하야오 애니메이션 영화" },
+    { word: "센과치히로", theme: "ANIME", meaning: "신들의 세계에 들어간 치히로의 모험 애니메이션" },
     { word: "방탄소년단", theme: "POP", meaning: "대한민국의 7인조 글로벌 보이그룹 (BTS)" },
     { word: "블랙핑크", theme: "POP", meaning: "대한민국의 4인조 글로벌 걸그룹" },
     { word: "뉴진스", theme: "POP", meaning: "대한민국의 5인조 걸그룹" },
     { word: "아이유", theme: "POP", meaning: "대한민국의 싱어송라이터이자 배우" },
     { word: "에스파", theme: "POP", meaning: "SM엔터테인먼트 소속 4인조 걸그룹" },
     { word: "아이브", theme: "POP", meaning: "스타쉽엔터테인먼트 소속 6인조 걸그룹" },
+    { word: "르세라핌", theme: "POP", meaning: "쏘스뮤직 소속 5인조 다국적 걸그룹" },
+    { word: "트와이스", theme: "POP", meaning: "JYP엔터테인먼트 소속 9인조 걸그룹" },
+    { word: "아일릿", theme: "POP", meaning: "빌리프랩 소속 5인조 다국적 걸그룹" },
+    { word: "엔믹스", theme: "POP", meaning: "JYP엔터테인먼트 소속 6인조 믹스팝 걸그룹" },
     { word: "세븐틴", theme: "POP", meaning: "플레디스 소속 13인조 보이그룹" },
+    { word: "스트레이키즈", theme: "POP", meaning: "JYP엔터테인먼트 소속 8인조 자체제작 보이그룹" },
+    { word: "라이즈", theme: "POP", meaning: "SM엔터테인먼트 소속 보이그룹" },
+    { word: "투모로우바이투게더", theme: "POP", meaning: "빅히트 뮤직 소속 5인조 보이그룹" },
+    { word: "엔하이픈", theme: "POP", meaning: "빌리프랩 소속 7인조 다국적 보이그룹" },
+    { word: "플레이브", theme: "POP", meaning: "블래스트 소속 5인조 버추얼 보이그룹" },
     { word: "데이식스", theme: "POP", meaning: "JYP엔터테인먼트 소속 4인조 밴드" },
+    { word: "지드래곤", theme: "POP", meaning: "빅뱅의 리더이자 대한민국의 래퍼·프로듀서" },
+    { word: "임영웅", theme: "POP", meaning: "대한민국의 대표 트로트·발라드 가수" },
     { word: "무한도전", theme: "POP", meaning: "MBC의 리얼 버라이어티 예능 프로그램" },
     { word: "런닝맨", theme: "POP", meaning: "SBS의 대표 일요 버라이어티 예능 프로그램" },
+    { word: "침착맨", theme: "POP", meaning: "웹툰 작가 이말년의 인터넷 방송 크리에이터 채널" },
+    { word: "슈카월드", theme: "POP", meaning: "경제·시사 유튜브 크리에이터 채널" },
     { word: "오징어게임", theme: "POP", meaning: "넷플릭스 오리지널 한국 서바이벌 드라마" },
     { word: "기생충", theme: "POP", meaning: "봉준호 감독의 아카데미 작품상 수상 영화" },
+    { word: "서울의봄", theme: "POP", meaning: "12·12 군사반란을 다룬 대한민국 천만 영화" },
+    { word: "파묘", theme: "POP", meaning: "장재현 감독의 오컬트 미스터리 천만 영화" },
     { word: "어벤져스", theme: "POP", meaning: "마블 시네마틱 유니버스의 슈퍼히어로 영화 시리즈" },
     { word: "아이언맨", theme: "POP", meaning: "마블 코믹스의 히어로 토니 스타크" },
     { word: "스파이더맨", theme: "POP", meaning: "마블 코믹스의 거미 능력 슈퍼히어로" },
     { word: "해리포터", theme: "POP", meaning: "판타지 소설 및 영화 시리즈" },
     { word: "민트초코", theme: "FOOD_BRAND", meaning: "민트 향에 초콜릿 칩을 섞은 디저트 맛" },
     { word: "마라탕", theme: "FOOD_BRAND", meaning: "쓰촨 지역의 얼얼하고 매운 향신료 국물 요리" },
+    { word: "마라샹궈", theme: "FOOD_BRAND", meaning: "마라 소스에 다양한 재료를 볶아 먹는 사천 요리" },
     { word: "탕후루", theme: "FOOD_BRAND", meaning: "과일에 설탕 시럽을 입혀 굳힌 간식" },
     { word: "엽기떡볶이", theme: "FOOD_BRAND", meaning: "매운맛으로 유명한 분식 프랜차이즈" },
+    { word: "마라엽떡", theme: "FOOD_BRAND", meaning: "마라와 떡볶이를 결합한 인기 메뉴" },
+    { word: "로제떡볶이", theme: "FOOD_BRAND", meaning: "크림과 고추장을 섞어 부드럽고 매콤한 떡볶이" },
     { word: "뿌링클", theme: "FOOD_BRAND", meaning: "치즈 시즈닝을 뿌린 인기 치킨 메뉴" },
+    { word: "황금올리브", theme: "FOOD_BRAND", meaning: "BBQ의 대표 올리브유 후라이드 치킨" },
     { word: "불닭볶음면", theme: "FOOD_BRAND", meaning: "삼양식품의 매운 볶음 라면 브랜드" },
     { word: "신라면", theme: "FOOD_BRAND", meaning: "농심의 대표 매운 국물 라면" },
+    { word: "진라면", theme: "FOOD_BRAND", meaning: "오뚜기의 대표 국물 라면" },
+    { word: "짜파게티", theme: "FOOD_BRAND", meaning: "농심의 대표 짜장 인스턴트 라면" },
     { word: "초코파이", theme: "FOOD_BRAND", meaning: "마시멜로를 넣은 빵에 초콜릿을 코팅한 과자" },
     { word: "새우깡", theme: "FOOD_BRAND", meaning: "새우를 넣어 만든 대한민국의 대표 스낵 과자" },
+    { word: "허니버터칩", theme: "FOOD_BRAND", meaning: "버터와 꿀 맛의 선풍적 인기를 끈 감자칩" },
+    { word: "소금빵", theme: "FOOD_BRAND", meaning: "버터 풍미에 굵은 소금을 올린 인기 빵" },
+    { word: "크로플", theme: "FOOD_BRAND", meaning: "크루아상 반죽을 와플 기계에 구운 디저트" },
     { word: "코카콜라", theme: "FOOD_BRAND", meaning: "전 세계적으로 판매되는 대표 탄산음료 브랜드" },
     { word: "스타벅스", theme: "FOOD_BRAND", meaning: "세계 최대 규모의 커피 전문점 프랜차이즈" },
+    { word: "메가커피", theme: "FOOD_BRAND", meaning: "대한민국의 대용량 가성비 커피 프랜차이즈" },
+    { word: "컴포즈커피", theme: "FOOD_BRAND", meaning: "대한민국의 대중적인 테이크아웃 커피 프랜차이즈" },
+    { word: "배스킨라빈스", theme: "FOOD_BRAND", meaning: "세계적인 프리미엄 아이스크림 프랜차이즈" },
     { word: "맥도날드", theme: "FOOD_BRAND", meaning: "글로벌 패스트푸드 햄버거 프랜차이즈" },
+    { word: "버거킹", theme: "FOOD_BRAND", meaning: "직화 와퍼로 유명한 햄버거 프랜차이즈" },
     { word: "배달의민족", theme: "FOOD_BRAND", meaning: "대한민국의 대표 음식 배달 플랫폼" },
+    { word: "당근마켓", theme: "FOOD_BRAND", meaning: "지역 기반 중고거래 모바일 커뮤니티" },
+    { word: "쿠팡", theme: "FOOD_BRAND", meaning: "대한민국의 로켓배송 이커머스 기업" },
+    { word: "올리브영", theme: "FOOD_BRAND", meaning: "대한민국의 헬스 앤 뷰티 스토어 프랜차이즈" },
+    { word: "다이소", theme: "FOOD_BRAND", meaning: "균일가 생활용품 전문 유통 체인" },
     { word: "카카오톡", theme: "FOOD_BRAND", meaning: "카카오가 서비스하는 모바일 메신저" },
     { word: "유튜브", theme: "FOOD_BRAND", meaning: "구글이 운영하는 세계 최대 동영상 공유 플랫폼" },
     { word: "인스타그램", theme: "FOOD_BRAND", meaning: "사진 및 동영상 공유 소셜 미디어 플랫폼" },
@@ -376,11 +448,21 @@ const DictionaryEngine = (() => {
     { word: "오운완", theme: "MEME", meaning: "오늘 운동 완료의 줄임말" },
     { word: "갓생", theme: "MEME", meaning: "부지런하고 모범적인 삶을 뜻하는 신조어" },
     { word: "억까", theme: "MEME", meaning: "억지로 까내리기 또는 불운이 겹치는 상황을 뜻하는 속어" },
+    { word: "폼미쳤다", theme: "MEME", meaning: "기량이나 활약이 엄청나다는 찬사의 유행어" },
+    { word: "누칼협", theme: "MEME", meaning: "누가 칼 들고 협박했냐의 줄임말" },
+    { word: "알잘딱깔센", theme: "MEME", meaning: "알아서 잘 딱 깔끔하고 센스있게의 줄임말" },
+    { word: "가스라이팅", theme: "MEME", meaning: "타인의 심리를 조작해 지배력을 행사하는 행위" },
     { word: "내로남불", theme: "MEME", meaning: "내가 하면 로맨스 남이 하면 불륜의 줄임말" },
     { word: "소확행", theme: "MEME", meaning: "소소하지만 확실한 행복의 줄임말" },
     { word: "워라밸", theme: "MEME", meaning: "일과 삶의 균형의 줄임말" },
     { word: "번아웃", theme: "MEME", meaning: "극도의 피로로 무기력해지는 현상" },
     { word: "흑역사", theme: "MEME", meaning: "없었던 일로 하고 싶거나 부끄러운 과거" },
+    { word: "킹받네", theme: "MEME", meaning: "열받네를 유쾌하게 강조하는 인터넷 신조어" },
+    { word: "극혐", theme: "MEME", meaning: "극도로 혐오함의 줄임말" },
+    { word: "현타", theme: "MEME", meaning: "현실 자각 타임의 줄임말" },
+    { word: "뇌절", theme: "MEME", meaning: "선을 넘어 똑같은 말이나 행동을 과하게 반복함" },
+    { word: "어쩔티비", theme: "MEME", meaning: "어쩌라고 가서 TV나 봐의 초등학생 유행어" },
+    { word: "엄준식", theme: "MEME", meaning: "인터넷 밈으로 널리 퍼진 이름 유행어" },
     { word: "세종대왕", theme: "GEO_HISTORY", meaning: "훈민정음을 창제한 조선 제4대 국왕" },
     { word: "이순신", theme: "GEO_HISTORY", meaning: "임진왜란 때 해전을 승리로 이끈 조선의 명장" },
     { word: "광개토대왕", theme: "GEO_HISTORY", meaning: "고구려의 전성기를 이끈 제19대 국왕" },
@@ -441,6 +523,7 @@ const DictionaryEngine = (() => {
       for (let i = 0; i < lines.length; i++) {
         const w = lines[i];
         if (w && w.length >= 2) {
+          if (BANNED_NON_STANDARD_WORDS.has(w)) continue;
           massiveStdSet.add(w);
           const ch = w[0];
           massiveStartCount.set(ch, (massiveStartCount.get(ch) || 0) + 1);
@@ -454,7 +537,7 @@ const DictionaryEngine = (() => {
                 isInjeong: false,
                 theme: 'STANDARD',
                 isCustom: false,
-                isCommon: true
+                isCommon: false
               };
               addEntryToIndex(e);
             }
@@ -668,6 +751,15 @@ const DictionaryEngine = (() => {
       };
     }
 
+    // 2.5 비표준어, 왜곡된 합성어, 북한어 및 방언 단어 차단
+    if (BANNED_NON_STANDARD_WORDS.has(word)) {
+      return {
+        valid: false,
+        code: 'BANNED_NON_STANDARD',
+        message: `'${word}'은(는) 비표준어 또는 방언/사투리로 끝말잇기에 사용할 수 없습니다.`
+      };
+    }
+
     // 3. 사전 등재 여부 확인 (wordMap 또는 33만 개 massiveStdSet)
     let entry = wordMap.get(word);
     if (!entry) {
@@ -678,7 +770,7 @@ const DictionaryEngine = (() => {
           isInjeong: false,
           theme: 'STANDARD',
           isCustom: false,
-          isCommon: true
+          isCommon: false
         };
       } else if (rules.freeDict) {
         entry = {
@@ -688,6 +780,16 @@ const DictionaryEngine = (() => {
           theme: 'STANDARD',
           isCustom: false,
           isCommon: false
+        };
+      } else if (rules.injeong && word.length >= 2 && word.length <= 8 && Hangul.isHangulWord(word)) {
+        // 어인정 모드: 플레이어가 입력한 대중문화·게임·애니·신조어·브랜드·인명 폭넓게 인정!
+        entry = {
+          word,
+          meaning: '어인정 인정 어휘',
+          isInjeong: true,
+          theme: 'CUSTOM',
+          isCustom: false,
+          isCommon: true
         };
       } else {
         return {
