@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko" data-theme="simple-dark">
 <head>
   <meta charset="UTF-8" />
@@ -773,8 +773,8 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 }
 
 .room-chat-panel {
-  height: 185px;
-  max-height: 185px;
+  height: 125px;
+  max-height: 125px;
   flex-shrink: 0;
 }
 
@@ -926,15 +926,15 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 /* ★ 원본 끄투 스타일 중앙 전광판 (Arena Board) ★ */
 .kkutu-arena {
   background: var(--arena-bg);
-  border: 4px solid var(--arena-border);
+  border: 1.5px solid var(--border-subtle);
   border-radius: 16px;
-  padding: 14px 18px;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   position: relative;
   color: var(--arena-text);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 }
 
 .arena-top-strip {
@@ -1034,31 +1034,37 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   font-weight: 900;
 }
 
-/* 전광판 중앙 제시어/단어 디스플레이 */
+/* 전광판 중앙 제시어/단어 디스플레이 (조잡함 완전 제거 & 모던 레이아웃) */
 .arena-center-stage {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  padding: 6px 4px;
+  gap: 16px;
+  padding: 8px 6px;
 }
 
-.target-syllable-box {
-  min-width: 165px;
-  background: var(--arena-box-bg);
-  border: 2px solid var(--arena-box-border);
-  border-radius: 12px;
-  padding: 10px 16px;
+/* 제시 글자 (Target Syllable Hero Wrap) */
+.target-hero-wrap {
+  min-width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
   text-align: center;
-  white-space: nowrap;
   flex-shrink: 0;
+  backdrop-filter: blur(8px);
 }
 
-.target-label {
-  font-size: 11px;
-  font-weight: 800;
+.target-sub-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   color: var(--arena-sub);
-  margin-bottom: 3px;
+  margin-bottom: 2px;
   white-space: nowrap;
 }
 
@@ -1066,14 +1072,47 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   font-size: 32px;
   font-weight: 900;
   color: #ffffff;
+  line-height: 1.15;
   white-space: nowrap;
 }
 
 .target-sub-info {
-  margin-top: 3px;
-  font-size: 11.5px;
-  color: #fde047;
+  font-size: 10.5px;
+  color: #facc15;
+  font-weight: 700;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* 미션 글자 배지 (Mission Badge Pill) */
+.mission-badge-pill {
+  min-width: 90px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  border-radius: 14px;
+  text-align: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(8px);
+}
+
+.mission-pill-label {
+  font-size: 10px;
   font-weight: 800;
+  color: #fde047;
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+
+.mission-char-val {
+  font-size: 28px;
+  font-weight: 900;
+  color: #fef08a;
+  line-height: 1.15;
   white-space: nowrap;
 }
 
@@ -1085,15 +1124,15 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .turn-owner-banner {
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 800;
   color: #fef08a;
-  background: rgba(0, 0, 0, 0.32);
-  border: 1px solid rgba(254, 240, 138, 0.35);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 3px 12px;
   border-radius: 99px;
   white-space: nowrap;
@@ -1103,11 +1142,11 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 }
 
 .live-word-box {
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 900;
   color: #ffffff;
   letter-spacing: 2px;
-  min-height: 40px;
+  min-height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1145,8 +1184,8 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   font-size: 12.5px;
   color: #f1f5f9;
   background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  padding: 4px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 4px 14px;
   border-radius: 999px;
   max-width: 100%;
   display: inline-flex;
@@ -1166,36 +1205,6 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   background: #9333ea;
   white-space: nowrap;
   flex-shrink: 0;
-}
-
-.mission-box {
-  min-width: 135px;
-  background: var(--arena-box-bg);
-  border: 2px solid #fbbf24;
-  border-radius: 12px;
-  padding: 10px 14px;
-  text-align: center;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.mission-label {
-  font-size: 11px;
-  font-weight: 800;
-  color: #fde68a;
-  white-space: nowrap;
-}
-
-.mission-char {
-  font-size: 32px;
-  font-weight: 900;
-  color: #ffffff;
-  line-height: 1.15;
-  white-space: nowrap;
-}
-
-.mission-bonus-hint {
-  display: none;
 }
 
 /* 이중 타이머 바 */
@@ -1270,58 +1279,55 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(0, 0, 0, 0.42);
-  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
   border-radius: 12px;
-  padding: 7px 10px;
+  padding: 6px 10px;
   margin-top: 2px;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .arena-word-input-wrap.my-turn-active {
-  background: rgba(250, 204, 21, 0.20);
+  background: rgba(250, 204, 21, 0.14);
   border-color: #facc15;
-  box-shadow: 0 0 18px rgba(250, 204, 21, 0.45);
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.35);
 }
 
 .arena-word-prefix {
-  padding: 7px 12px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.16);
-  color: #ffffff;
-  font-size: 12.5px;
-  font-weight: 900;
+  padding: 4px 8px;
+  font-size: 16px;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-.arena-word-input-wrap.my-turn-active .arena-word-prefix {
-  background: #facc15;
-  color: #111827;
-}
-
 .arena-word-input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.95);
-  border: 2px solid transparent;
-  border-radius: 8px;
-  padding: 9px 14px;
-  font-size: 15px;
-  font-weight: 800;
-  color: #111827;
+  background: transparent;
+  border: none;
   outline: none;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 6px 4px;
+}
+
+.arena-word-input::placeholder {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .arena-word-input:disabled {
-  background: rgba(255, 255, 255, 0.22);
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.4);
   cursor: not-allowed;
 }
 
 .arena-word-btn {
-  padding: 9px 18px;
-  font-size: 13.5px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  border-radius: 8px;
 }
 
 /* ==========================================
@@ -1335,13 +1341,13 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 
 .player-card {
   background: var(--bg-panel);
-  border: 2px solid var(--border-subtle);
+  border: 1.5px solid var(--border-subtle);
   border-radius: 12px;
-  padding: 10px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   position: relative;
   transition: all 0.16s ease;
   white-space: nowrap;
@@ -1350,7 +1356,7 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 
 .player-card.active-turn {
   border-color: var(--accent-gold);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.32);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.4), 0 4px 14px rgba(245, 158, 11, 0.2);
   transform: translateY(-2px);
 }
 
@@ -1385,15 +1391,15 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 }
 
 .player-avatar {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: var(--bg-card-subtle);
-  border: 2px solid var(--border-subtle);
+  border: 1.5px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 22px;
   flex-shrink: 0;
 }
 
@@ -1402,13 +1408,13 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   align-items: center;
   gap: 4px;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--text-main);
   white-space: nowrap;
 }
 
 .player-score {
-  font-size: 14.5px;
+  font-size: 13.5px;
   font-weight: 900;
   color: var(--accent-primary);
   font-variant-numeric: tabular-nums;
@@ -1416,7 +1422,7 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 }
 
 .player-status-tag {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
   padding: 2px 8px;
   border-radius: 99px;
@@ -1656,6 +1662,7 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 </head>
 </head>
 </head>
+</head>
   
 </head>
 <body>
@@ -1797,6 +1804,7 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
         </div>
 
         <div class="room-header-controls">
+          <button class="btn btn-purple btn-sm" id="btnHeaderInviteLink" title="카톡/디스코드 친구 초대 링크 복사">🔗 친구 초대</button>
           <button class="btn btn-outline btn-sm" id="btnAddBot" title="AI 봇 플레이어 추가">+ 🤖 봇 추가</button>
           <button class="btn btn-outline btn-sm" id="btnOpenRoomManage" title="방 설정 및 봇 관리">⚙️ 관리</button>
           <button class="btn btn-success btn-sm" id="btnReadyOrStart">🚀 게임 시작</button>
@@ -1822,14 +1830,14 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
         </div>
 
         <div class="arena-center-stage">
-          <!-- 좌측: 현재 이어야 할 제시 글자 -->
-          <div class="target-syllable-box">
-            <div class="target-label">제시 글자</div>
+          <!-- 좌측: 현재 제시 글자 (깔끔한 타원형 배지) -->
+          <div class="target-hero-wrap">
+            <span class="target-sub-label">제시 글자</span>
             <div class="target-char-main" id="targetCharMain">대기중</div>
-            <div class="target-sub-info" id="targetSubInfo">두음법칙 적용</div>
+            <span class="target-sub-info" id="targetSubInfo">두음법칙 ON</span>
           </div>
 
-          <!-- 중앙: 현재 입력 미리보기 & 직전 단어 뜻 -->
+          <!-- 중앙: 직전 단어 & 뜻 표시 -->
           <div class="center-word-display">
             <div class="turn-owner-banner" id="turnOwnerBanner">대기 중 — 모든 플레이어가 준비되면 시작하세요!</div>
             <div class="live-word-box" id="liveWordBox">KKuTu LITE</div>
@@ -1838,18 +1846,17 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
             </div>
           </div>
 
-          <!-- 우측: 미션 글자 박스 -->
-          <div class="mission-box">
-            <div class="mission-label">🎯 미션 글자</div>
-            <div class="mission-char" id="missionCharDisplay">가</div>
-            <div class="mission-bonus-hint" style="display:none;"></div>
+          <!-- 우측: 미션 글자 배지 (미션 룰 활성화 시 표시) -->
+          <div class="mission-badge-pill" id="missionBoxWrap" style="display:none;">
+            <span class="mission-pill-label">🎯 미션</span>
+            <span class="mission-char-val" id="missionCharDisplay">-</span>
           </div>
         </div>
 
-        <!-- 이중 타이머 게이지 바 -->
+        <!-- 슬림 타이머 게이지 바 -->
         <div class="timers-wrap">
           <div class="timer-row">
-            <span class="timer-label">⚡ 턴 시간</span>
+            <span class="timer-label">⚡ 턴</span>
             <div class="timer-track">
               <div class="timer-fill turn-timer-fill" id="turnTimerFill" style="width:100%;"></div>
             </div>
@@ -1864,37 +1871,36 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
           </div>
         </div>
 
-        <!-- ★ 원본 끄투처럼 전광판 내부에 분리된 전용 끝말잇기 단어 입력창 ★ -->
+        <!-- 전용 끝말잇기 단어 입력 바 -->
         <div class="arena-word-input-wrap" id="arenaWordInputWrap">
-          <div class="arena-word-prefix" id="arenaWordPrefix">🎯 끝말잇기 입력</div>
+          <div class="arena-word-prefix" id="arenaWordPrefix">✍️</div>
           <input
             type="text"
             id="arenaWordInput"
             class="arena-word-input"
-            placeholder="게임이 시작되고 내 차례가 되면 여기에 단어를 입력합니다!"
+            placeholder="단어를 입력하세요 (Enter)"
             autocomplete="off"
           />
-          <button class="btn btn-success arena-word-btn" id="btnArenaWordSubmit">단어 제출 (Enter)</button>
+          <button class="btn btn-success arena-word-btn" id="btnArenaWordSubmit">제출</button>
         </div>
       </div>
 
       <!-- 플레이어 캐릭터 슬롯 그리드 -->
       <div class="players-slot-grid" id="playersSlotGrid"></div>
 
-      <!-- 하단: 순수 실시간 채팅 전용 창 (단어 입력창과 완전 분리!) -->
+      <!-- 하단: 실시간 채팅창 -->
       <div class="panel room-chat-panel">
         <div class="chat-messages" id="roomChatMessages"></div>
         <div class="chat-input-row">
-          <span class="chat-only-tag" id="chatRoleTag">💬 채팅</span>
           <input
             type="text"
             id="roomChatInput"
             class="chat-input"
-            placeholder="친구들과 자유롭게 채팅하세요 (단어 입력은 위 전광판 입력창에서!)"
+            placeholder="채팅 메시지를 입력하세요..."
             autocomplete="off"
             maxlength="150"
           />
-          <button class="btn btn-primary" id="btnSendRoomChat">채팅 전송</button>
+          <button class="btn btn-primary" id="btnSendRoomChat">전송</button>
         </div>
       </div>
     </section>
@@ -335231,7 +335237,7 @@ const DictionaryEngine = (() => {
             if (!wordMap.has(w)) {
               const e = {
                 word: w,
-                meaning: '표준국어대사전 등재 어휘',
+                meaning: '국어사전 등재 단어',
                 isInjeong: false,
                 theme: 'STANDARD',
                 isCustom: false,
@@ -335464,7 +335470,7 @@ const DictionaryEngine = (() => {
       if (massiveStdSet.has(word)) {
         entry = {
           word,
-          meaning: '표준국어대사전 등재 명사',
+          meaning: '국어사전 등재 단어',
           isInjeong: false,
           theme: 'STANDARD',
           isCustom: false,
@@ -335620,7 +335626,7 @@ const DictionaryEngine = (() => {
       const followCount = getFollowUpWords(nextChar, rules, null, q).length;
       results.unshift({
         word: q,
-        meaning: '표준국어대사전 등재 명사',
+        meaning: '국어사전 등재 단어',
         isInjeong: false,
         theme: 'STANDARD',
         isCustom: false,
@@ -335740,20 +335746,10 @@ const App = (() => {
     updateDictStatsUI();
     startClientSmoothTimerLoop();
 
-    addLobbySystemChat('🎉 끄투 LITE에 오신 것을 환영합니다! (표준국어대사전 33만 단어 탑재)');
+    addLobbySystemChat('🎉 끄투 LITE에 오신 것을 환영합니다!');
 
     // URL 파라미터 1-클릭 초대 링크 (?host=...&room=...) 자동 연결
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const autoHost = urlParams.get('host');
-      const autoRoom = urlParams.get('room');
-      if (autoHost) {
-        addLobbySystemChat(`🌐 초대 링크 감지: 호스트(${autoHost})와 연결을 시작합니다...`);
-        setTimeout(() => {
-          connectToRemotePeer(autoHost, autoRoom);
-        }, 600);
-      }
-    } catch (e) {}
+    handleAutoInviteUrl();
 
     // 주기적 하트비트 (접속자 및 방 상태 동기화)
     setInterval(() => {
@@ -335883,6 +335879,7 @@ const App = (() => {
   }
 
   // Google 공용 STUN 서버 설정 (서로 다른 공유기/LTE 환경 친구 연결 보장)
+  // Google 공용 STUN 서버 설정 (공유기/LTE/모바일 P2P 연결 지원)
   const PEERJS_CONFIG = {
     config: {
       iceServers: [
@@ -335894,7 +335891,12 @@ const App = (() => {
     }
   };
 
-  // PeerJS (원격 인터넷 친구 초대 코드 연결)
+  // PeerJS 싱글톤 인스턴스 및 초기화 프로미스 관리 (중복 생성 방지)
+  let peerInstance = null;
+  let peerInitPromise = null;
+  let myInviteCode = null;
+  const peerConnections = new Map();
+
   function ensurePeerReady(callback) {
     if (typeof Peer !== 'undefined') {
       callback();
@@ -335908,40 +335910,78 @@ const App = (() => {
         callback();
       } else if (count > 60) {
         clearInterval(timer);
-        console.warn('PeerJS 라이브러리 로드 대기 초과');
+        console.warn('[PeerJS] 라이브러리 로드 대기 초과');
       }
     }, 100);
   }
 
-  function initPeerJSHost(callback) {
-    ensurePeerReady(() => {
-      if (peerInstance && myInviteCode) {
-        updateInviteModalLinkDisplay(myInviteCode);
-        if (callback) callback(myInviteCode);
-        return;
-      }
-      const randomCode = 'KKUTU-' + Math.random().toString(36).slice(2, 8).toUpperCase();
-      const peer = new Peer(randomCode, PEERJS_CONFIG);
+  function ensurePeerInstance() {
+    if (peerInstance && !peerInstance.destroyed && myInviteCode) {
+      return Promise.resolve(peerInstance);
+    }
+    if (peerInitPromise) {
+      return peerInitPromise;
+    }
 
-      peer.on('open', (id) => {
-        peerInstance = peer;
-        myInviteCode = id;
-        updateNetStatusPill(`온라인 (초대 가능: ${id})`);
-        updateInviteModalLinkDisplay(id);
-        if (callback) callback(id);
-      });
+    peerInitPromise = new Promise((resolve, reject) => {
+      ensurePeerReady(() => {
+        if (typeof Peer === 'undefined') {
+          peerInitPromise = null;
+          reject(new Error('PeerJS 라이브러리를 불러올 수 없습니다.'));
+          return;
+        }
 
-      peer.on('connection', (conn) => {
-        setupPeerConnection(conn);
-      });
+        // 공용 서버(0.peerjs.com)에서 충돌이 절대 발생하지 않는 고유 ID 부여
+        const uniqueId = 'kkutu-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
 
-      peer.on('error', (err) => {
-        if (err.type === 'unavailable-id') {
-          peer.destroy();
-          peerInstance = null;
-          setTimeout(() => initPeerJSHost(callback), 400);
+        try {
+          const peer = new Peer(uniqueId, PEERJS_CONFIG);
+
+          peer.on('open', (id) => {
+            peerInstance = peer;
+            myInviteCode = id;
+            updateNetStatusPill(`🌐 온라인 (초대 가능: ${id.slice(-6).toUpperCase()})`);
+            updateInviteModalLinkDisplay(id);
+            resolve(peer);
+          });
+
+          peer.on('connection', (conn) => {
+            setupPeerConnection(conn, false);
+          });
+
+          peer.on('error', (err) => {
+            console.warn('[PeerJS] 에러 발생:', err);
+            if (!myInviteCode) {
+              peerInitPromise = null;
+              reject(err);
+            }
+          });
+
+          peer.on('disconnected', () => {
+            try { peer.reconnect(); } catch (e) {}
+          });
+
+          peer.on('close', () => {
+            peerInstance = null;
+            peerInitPromise = null;
+            myInviteCode = null;
+          });
+        } catch (e) {
+          peerInitPromise = null;
+          reject(e);
         }
       });
+    });
+
+    return peerInitPromise;
+  }
+
+  function initPeerJSHost(callback) {
+    ensurePeerInstance().then((peer) => {
+      if (callback) callback(myInviteCode);
+    }).catch((err) => {
+      console.warn('[PeerJS] 호스트 초기화 실패:', err);
+      if (callback) callback(null);
     });
   }
 
@@ -335956,11 +335996,11 @@ const App = (() => {
     }
   }
 
-  function connectToRemotePeer(targetInput, autoJoinRoomId = null) {
+  async function connectToRemotePeer(targetInput, autoJoinRoomId = null) {
     if (!targetInput) return;
     let cleanCode = targetInput.trim();
 
-    // 사용자가 전체 URL(예: https://.../?room=101&host=KKUTU-ABC)을 붙여넣었을 경우 자동 파싱!
+    // 사용자가 전체 URL(예: https://.../?room=101&host=kkutu-...)을 붙여넣었을 경우 자동 파싱
     if (cleanCode.includes('?')) {
       try {
         const urlObj = new URL(cleanCode.startsWith('http') ? cleanCode : 'https://' + cleanCode);
@@ -335970,54 +336010,54 @@ const App = (() => {
         if (roomParam && !autoJoinRoomId) autoJoinRoomId = roomParam;
       } catch (e) {}
     }
-    cleanCode = cleanCode.toUpperCase();
 
     if (autoJoinRoomId) {
       targetRoomToAutoJoin = autoJoinRoomId;
     }
 
-    if (cleanCode === myInviteCode) {
-      showToast('⚠️ 자기 자신의 초대 링크/코드입니다.');
-      return;
-    }
+    try {
+      await ensurePeerInstance();
 
-    ensurePeerReady(() => {
-      const doConnect = () => {
-        const conn = peerInstance.connect(cleanCode, { reliable: true });
-        setupPeerConnection(conn, cleanCode);
-      };
-
-      if (!peerInstance) {
-        const myPeerId = 'KKUTU-USER-' + Math.random().toString(36).slice(2, 8).toUpperCase();
-        peerInstance = new Peer(myPeerId, PEERJS_CONFIG);
-        peerInstance.on('open', () => {
-          doConnect();
-        });
-        peerInstance.on('connection', (c) => setupPeerConnection(c));
-        peerInstance.on('error', (err) => {
-          showToast('원격 코드 연결 실패: 링크나 코드를 다시 확인해 주세요 (' + (err.type || '') + ')');
-        });
-      } else {
-        doConnect();
+      if (cleanCode === myInviteCode) {
+        showToast('⚠️ 자기 자신의 초대 코드입니다.');
+        return;
       }
-    });
+
+      showToast(`🌐 호스트(${cleanCode.slice(-6).toUpperCase()})와 연결 중...`);
+      const conn = peerInstance.connect(cleanCode, { reliable: true });
+      setupPeerConnection(conn, true);
+    } catch (err) {
+      console.error('[PeerJS] 연결 실패:', err);
+      showToast('⚠️ P2P 네트워크 초기화에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+    }
   }
 
-  function setupPeerConnection(conn, labelCode = '') {
+  function setupPeerConnection(conn, isInitiator = false) {
     conn.on('open', () => {
       peerConnections.set(conn.peer, conn);
-      updateNetStatusPill(`원격 친구 연결됨 (${peerConnections.size}명)`);
-      showToast(`🌐 원격 피어(${conn.peer})와 실시간 연결되었습니다!`);
+      updateNetStatusPill(`원격 연결됨 (${peerConnections.size}명)`);
+      showToast(`🌐 원격 피어와 실시간 P2P 연결되었습니다!`);
 
-      // 연결 즉시 내 정보, 전체 접속자 목록, 커스텀 단어장, 모든 방 정보 전송
-      conn.send({
-        senderId: myUser.id,
-        type: 'HELLO_SYNC_RES',
-        user: myUser,
-        users: Array.from(usersMap.values()),
-        rooms: Array.from(roomsMap.values()),
-        customWords: DictionaryEngine.getCustomWordsList()
-      });
+      if (isInitiator) {
+        // 내가 초대를 받아 연결을 건 피어: 호스트에게 전체 방 목록 및 입장 동기화 요청
+        conn.send({
+          senderId: myUser.id,
+          type: 'HELLO_SYNC_REQ',
+          user: myUser,
+          targetRoomId: targetRoomToAutoJoin || null,
+          customWords: DictionaryEngine.getCustomWordsList()
+        });
+      } else {
+        // 내가 초대를 받은 호스트/기존 참가자: 내 정보 및 전체 방 정보 응답
+        conn.send({
+          senderId: myUser.id,
+          type: 'HELLO_SYNC_RES',
+          user: myUser,
+          users: Array.from(usersMap.values()),
+          rooms: Array.from(roomsMap.values()),
+          customWords: DictionaryEngine.getCustomWordsList()
+        });
+      }
     });
 
     conn.on('data', (data) => {
@@ -336028,8 +336068,28 @@ const App = (() => {
 
     conn.on('close', () => {
       peerConnections.delete(conn.peer);
-      updateNetStatusPill(peerConnections.size > 0 ? `원격 친구 연결됨 (${peerConnections.size}명)` : '멀티탭/로컬 동기화 활성');
+      updateNetStatusPill(peerConnections.size > 0 ? `원격 연결됨 (${peerConnections.size}명)` : '멀티탭/로컬 동기화 활성');
     });
+
+    conn.on('error', (err) => {
+      console.warn('[PeerJS] 연결 에러:', err);
+    });
+  }
+
+  function handleAutoInviteUrl() {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const autoHost = urlParams.get('host');
+      const autoRoom = urlParams.get('room');
+
+      if (autoHost && autoHost !== 'null' && autoHost !== 'undefined') {
+        addLobbySystemChat(`🌐 친구 초대 링크 감지: 방 #${autoRoom || ''} 호스트와 실시간 연결 중입니다...`);
+        showToast(`🔗 초대 링크 감지: 호스트와 연결 중...`);
+        setTimeout(() => {
+          connectToRemotePeer(autoHost, autoRoom);
+        }, 300);
+      }
+    } catch (e) {}
   }
 
   function broadcastPacket(payload, excludePeerId = null) {
@@ -336105,8 +336165,15 @@ const App = (() => {
           user: myUser,
           users: Array.from(usersMap.values()),
           rooms: Array.from(roomsMap.values()),
-          customWords: DictionaryEngine.getCustomWordsList()
+          customWords: DictionaryEngine.getCustomWordsList(),
+          autoJoinRoomId: pkt.targetRoomId || null
         });
+        if (pkt.targetRoomId && roomsMap.has(pkt.targetRoomId)) {
+          const r = roomsMap.get(pkt.targetRoomId);
+          if (r.hostId === myUser.id) {
+            syncRoomState(r);
+          }
+        }
         break;
       }
 
@@ -336130,13 +336197,14 @@ const App = (() => {
         }
         renderLobbyUsers();
         renderRoomsList();
-        if (targetRoomToAutoJoin && roomsMap.has(targetRoomToAutoJoin)) {
-          const autoJoinId = targetRoomToAutoJoin;
+        const roomToJoin = pkt.autoJoinRoomId || targetRoomToAutoJoin;
+        if (roomToJoin && roomsMap.has(roomToJoin)) {
+          const autoJoinId = roomToJoin;
           targetRoomToAutoJoin = null;
           setTimeout(() => {
             joinRoom(autoJoinId, false);
-            showToast(`🎮 초대 링크를 통해 #${autoJoinId} 방에 입장했습니다!`);
-          }, 300);
+            showToast(`🎮 초대받은 방 #${autoJoinId}에 성공적으로 입장했습니다!`);
+          }, 200);
         }
         if (myUser.roomId && roomsMap.has(myUser.roomId)) {
           renderRoomArena();
@@ -336517,7 +336585,7 @@ const App = (() => {
   /**
    * 1-클릭 친구 초대 링크 복사 (Vercel 배포 시 카톡/디스코드에 바로 공유 가능)
    */
-  function copyRoomInviteLink() {
+  async function copyRoomInviteLink() {
     if (!myUser.roomId) {
       showToast('입장한 방이 없습니다.');
       return;
@@ -336525,35 +336593,44 @@ const App = (() => {
     const room = roomsMap.get(myUser.roomId);
     if (!room) return;
 
-    const btn = document.getElementById('btnCopyInviteLink');
-    if (btn) btn.textContent = '⏳ 링크 생성중...';
-
-    const finishCopy = (code) => {
-      const url = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(room.id)}&host=${encodeURIComponent(code)}`;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(() => {
-          showToast(`📋 방 #${room.id} 1-클릭 초대 링크가 복사되었습니다! 친구들에게 공유하세요.`);
-          if (btn) btn.textContent = '✅ 복사 완료!';
-          setTimeout(() => { if (btn) btn.textContent = '🔗 링크 복사'; }, 2000);
-        }).catch(() => {
-          prompt('아래 초대 링크를 복사하여 친구들에게 전달하세요:', url);
-          if (btn) btn.textContent = '🔗 링크 복사';
-        });
-      } else {
-        prompt('아래 초대 링크를 복사하여 친구들에게 전달하세요:', url);
-        if (btn) btn.textContent = '🔗 링크 복사';
-      }
+    const btnHeader = document.getElementById('btnHeaderInviteLink');
+    const btnManage = document.getElementById('btnCopyInviteLink');
+    const setBtnText = (txt) => {
+      if (btnHeader) btnHeader.textContent = txt;
+      if (btnManage) btnManage.textContent = txt;
     };
 
-    const targetCode = room.hostPeerCode || (room.hostId === myUser.id ? myInviteCode : null);
-    if (targetCode) {
-      finishCopy(targetCode);
-    } else {
-      initPeerJSHost((code) => {
-        room.hostPeerCode = code;
+    setBtnText('⏳ 링크 준비중...');
+
+    try {
+      await ensurePeerInstance();
+      const hostCode = room.hostPeerCode || (room.hostId === myUser.id ? myInviteCode : null) || myInviteCode;
+      if (!hostCode) {
+        showToast('⚠️ P2P 네트워크 연결 중입니다. 1~2초 후 다시 시도해 주세요.');
+        setBtnText('🔗 친구 초대');
+        return;
+      }
+
+      if (room.hostId === myUser.id && !room.hostPeerCode) {
+        room.hostPeerCode = hostCode;
         syncRoomState(room);
-        finishCopy(code);
-      });
+      }
+
+      const url = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(room.id)}&host=${encodeURIComponent(hostCode)}`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+        showToast(`📋 초대 링크가 복사되었습니다! 친구에게 카톡/디스코드로 전달하세요.`);
+        setBtnText('✅ 복사 완료!');
+        setTimeout(() => setBtnText('🔗 친구 초대'), 2500);
+      } else {
+        prompt('아래 초대 링크를 복사하여 친구들에게 전달하세요:', url);
+        setBtnText('🔗 친구 초대');
+      }
+    } catch (err) {
+      console.error('[초대 링크] 복사 실패:', err);
+      showToast('초대 링크 생성에 실패했습니다.');
+      setBtnText('🔗 친구 초대');
     }
   }
 
@@ -337100,8 +337177,8 @@ const App = (() => {
       return;
     }
 
-    // 실생활 고빈도 표준 명사(구체적인 뜻풀이가 있는 자연스러운 단어)를 1순위로 선정하여 봇이 억지/희귀어(발간색 등)를 내지 않도록 보장
-    const commonMatches = validCandidates.filter(e => e.isCommon && e.meaning && !e.meaning.startsWith('표준국어대사전 등재') && !e.isCustom);
+    // 실생활 고빈도 표준 명사(구체적인 뜻풀이가 있는 자연스러운 단어)를 1순위로 선정하여 봇이 억지/희귀어를 내지 않도록 보장
+    const commonMatches = validCandidates.filter(e => e.isCommon && e.meaning && !e.meaning.startsWith('국어사전 등재') && !e.meaning.startsWith('표준국어대사전') && !e.isCustom);
     const candidatePool = commonMatches.length > 0 ? commonMatches : validCandidates;
 
     // 난이도별 단어 선택
@@ -337286,6 +337363,7 @@ const App = (() => {
       openEditRoomModal();
     });
     document.getElementById('btnCopyInviteLink')?.addEventListener('click', copyRoomInviteLink);
+    document.getElementById('btnHeaderInviteLink')?.addEventListener('click', copyRoomInviteLink);
 
     document.getElementById('btnOpenRoomManage')?.addEventListener('click', () => {
       openModal('roomManageModal');
@@ -337757,7 +337835,7 @@ const App = (() => {
       targetMainEl.textContent = Hangul.formatTargetChar(room.game.targetChar, room.rules.dueum);
       targetSubEl.textContent = room.rules.dueum ? '두음법칙 ON' : '두음법칙 OFF';
     } else {
-      targetMainEl.textContent = '대기중';
+      targetMainEl.textContent = '대기';
       targetSubEl.textContent = room.rules.dueum ? '두음법칙 ON' : '두음법칙 OFF';
     }
 
@@ -337769,12 +337847,14 @@ const App = (() => {
 
     restoreCenterWordDisplay(room);
 
-    // 미션 글자 박스
+    // 미션 글자 박스 (미션 룰 활성화 시에만 깔끔하게 노출)
     const missionCharEl = document.getElementById('missionCharDisplay');
+    const missionBoxWrap = document.getElementById('missionBoxWrap');
+    if (missionBoxWrap) {
+      missionBoxWrap.style.display = room.rules.mission ? 'inline-flex' : 'none';
+    }
     if (room.rules.mission) {
-      missionCharEl.textContent = isPlaying && room.game.missionChar ? room.game.missionChar : 'ON';
-    } else {
-      missionCharEl.textContent = 'OFF';
+      missionCharEl.textContent = isPlaying && room.game.missionChar ? room.game.missionChar : '-';
     }
 
     // 타이머 바

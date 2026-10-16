@@ -766,8 +766,8 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 }
 
 .room-chat-panel {
-  height: 185px;
-  max-height: 185px;
+  height: 125px;
+  max-height: 125px;
   flex-shrink: 0;
 }
 
@@ -919,15 +919,15 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 /* ★ 원본 끄투 스타일 중앙 전광판 (Arena Board) ★ */
 .kkutu-arena {
   background: var(--arena-bg);
-  border: 4px solid var(--arena-border);
+  border: 1.5px solid var(--border-subtle);
   border-radius: 16px;
-  padding: 14px 18px;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   position: relative;
   color: var(--arena-text);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 }
 
 .arena-top-strip {
@@ -1027,31 +1027,37 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   font-weight: 900;
 }
 
-/* 전광판 중앙 제시어/단어 디스플레이 */
+/* 전광판 중앙 제시어/단어 디스플레이 (조잡함 완전 제거 & 모던 레이아웃) */
 .arena-center-stage {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  padding: 6px 4px;
+  gap: 16px;
+  padding: 8px 6px;
 }
 
-.target-syllable-box {
-  min-width: 165px;
-  background: var(--arena-box-bg);
-  border: 2px solid var(--arena-box-border);
-  border-radius: 12px;
-  padding: 10px 16px;
+/* 제시 글자 (Target Syllable Hero Wrap) */
+.target-hero-wrap {
+  min-width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
   text-align: center;
-  white-space: nowrap;
   flex-shrink: 0;
+  backdrop-filter: blur(8px);
 }
 
-.target-label {
-  font-size: 11px;
-  font-weight: 800;
+.target-sub-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   color: var(--arena-sub);
-  margin-bottom: 3px;
+  margin-bottom: 2px;
   white-space: nowrap;
 }
 
@@ -1059,14 +1065,47 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   font-size: 32px;
   font-weight: 900;
   color: #ffffff;
+  line-height: 1.15;
   white-space: nowrap;
 }
 
 .target-sub-info {
-  margin-top: 3px;
-  font-size: 11.5px;
-  color: #fde047;
+  font-size: 10.5px;
+  color: #facc15;
+  font-weight: 700;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* 미션 글자 배지 (Mission Badge Pill) */
+.mission-badge-pill {
+  min-width: 90px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  border-radius: 14px;
+  text-align: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(8px);
+}
+
+.mission-pill-label {
+  font-size: 10px;
   font-weight: 800;
+  color: #fde047;
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+
+.mission-char-val {
+  font-size: 28px;
+  font-weight: 900;
+  color: #fef08a;
+  line-height: 1.15;
   white-space: nowrap;
 }
 
@@ -1078,15 +1117,15 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .turn-owner-banner {
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 800;
   color: #fef08a;
-  background: rgba(0, 0, 0, 0.32);
-  border: 1px solid rgba(254, 240, 138, 0.35);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 3px 12px;
   border-radius: 99px;
   white-space: nowrap;
@@ -1096,11 +1135,11 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 }
 
 .live-word-box {
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 900;
   color: #ffffff;
   letter-spacing: 2px;
-  min-height: 40px;
+  min-height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1138,8 +1177,8 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   font-size: 12.5px;
   color: #f1f5f9;
   background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  padding: 4px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 4px 14px;
   border-radius: 999px;
   max-width: 100%;
   display: inline-flex;
@@ -1159,36 +1198,6 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   background: #9333ea;
   white-space: nowrap;
   flex-shrink: 0;
-}
-
-.mission-box {
-  min-width: 135px;
-  background: var(--arena-box-bg);
-  border: 2px solid #fbbf24;
-  border-radius: 12px;
-  padding: 10px 14px;
-  text-align: center;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.mission-label {
-  font-size: 11px;
-  font-weight: 800;
-  color: #fde68a;
-  white-space: nowrap;
-}
-
-.mission-char {
-  font-size: 32px;
-  font-weight: 900;
-  color: #ffffff;
-  line-height: 1.15;
-  white-space: nowrap;
-}
-
-.mission-bonus-hint {
-  display: none;
 }
 
 /* 이중 타이머 바 */
@@ -1263,58 +1272,55 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(0, 0, 0, 0.42);
-  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
   border-radius: 12px;
-  padding: 7px 10px;
+  padding: 6px 10px;
   margin-top: 2px;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .arena-word-input-wrap.my-turn-active {
-  background: rgba(250, 204, 21, 0.20);
+  background: rgba(250, 204, 21, 0.14);
   border-color: #facc15;
-  box-shadow: 0 0 18px rgba(250, 204, 21, 0.45);
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.35);
 }
 
 .arena-word-prefix {
-  padding: 7px 12px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.16);
-  color: #ffffff;
-  font-size: 12.5px;
-  font-weight: 900;
+  padding: 4px 8px;
+  font-size: 16px;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-.arena-word-input-wrap.my-turn-active .arena-word-prefix {
-  background: #facc15;
-  color: #111827;
-}
-
 .arena-word-input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.95);
-  border: 2px solid transparent;
-  border-radius: 8px;
-  padding: 9px 14px;
-  font-size: 15px;
-  font-weight: 800;
-  color: #111827;
+  background: transparent;
+  border: none;
   outline: none;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 6px 4px;
+}
+
+.arena-word-input::placeholder {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .arena-word-input:disabled {
-  background: rgba(255, 255, 255, 0.22);
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.4);
   cursor: not-allowed;
 }
 
 .arena-word-btn {
-  padding: 9px 18px;
-  font-size: 13.5px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  border-radius: 8px;
 }
 
 /* ==========================================
@@ -1328,13 +1334,13 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 
 .player-card {
   background: var(--bg-panel);
-  border: 2px solid var(--border-subtle);
+  border: 1.5px solid var(--border-subtle);
   border-radius: 12px;
-  padding: 10px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   position: relative;
   transition: all 0.16s ease;
   white-space: nowrap;
@@ -1343,7 +1349,7 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 
 .player-card.active-turn {
   border-color: var(--accent-gold);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.32);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.4), 0 4px 14px rgba(245, 158, 11, 0.2);
   transform: translateY(-2px);
 }
 
@@ -1378,15 +1384,15 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 }
 
 .player-avatar {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: var(--bg-card-subtle);
-  border: 2px solid var(--border-subtle);
+  border: 1.5px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 22px;
   flex-shrink: 0;
 }
 
@@ -1395,13 +1401,13 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
   align-items: center;
   gap: 4px;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--text-main);
   white-space: nowrap;
 }
 
 .player-score {
-  font-size: 14.5px;
+  font-size: 13.5px;
   font-weight: 900;
   color: var(--accent-primary);
   font-variant-numeric: tabular-nums;
@@ -1409,7 +1415,7 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 }
 
 .player-status-tag {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
   padding: 2px 8px;
   border-radius: 99px;

@@ -533,7 +533,7 @@ const DictionaryEngine = (() => {
             if (!wordMap.has(w)) {
               const e = {
                 word: w,
-                meaning: '표준국어대사전 등재 어휘',
+                meaning: '국어사전 등재 단어',
                 isInjeong: false,
                 theme: 'STANDARD',
                 isCustom: false,
@@ -766,7 +766,7 @@ const DictionaryEngine = (() => {
       if (massiveStdSet.has(word)) {
         entry = {
           word,
-          meaning: '표준국어대사전 등재 명사',
+          meaning: '국어사전 등재 단어',
           isInjeong: false,
           theme: 'STANDARD',
           isCustom: false,
@@ -922,7 +922,7 @@ const DictionaryEngine = (() => {
       const followCount = getFollowUpWords(nextChar, rules, null, q).length;
       results.unshift({
         word: q,
-        meaning: '표준국어대사전 등재 명사',
+        meaning: '국어사전 등재 단어',
         isInjeong: false,
         theme: 'STANDARD',
         isCustom: false,

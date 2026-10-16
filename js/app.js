@@ -59,20 +59,10 @@ const App = (() => {
     updateDictStatsUI();
     startClientSmoothTimerLoop();
 
-    addLobbySystemChat('🎉 끄투 LITE에 오신 것을 환영합니다! (표준국어대사전 33만 단어 탑재)');
+    addLobbySystemChat('🎉 끄투 LITE에 오신 것을 환영합니다!');
 
     // URL 파라미터 1-클릭 초대 링크 (?host=...&room=...) 자동 연결
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const autoHost = urlParams.get('host');
-      const autoRoom = urlParams.get('room');
-      if (autoHost) {
-        addLobbySystemChat(`🌐 초대 링크 감지: 호스트(${autoHost})와 연결을 시작합니다...`);
-        setTimeout(() => {
-          connectToRemotePeer(autoHost, autoRoom);
-        }, 600);
-      }
-    } catch (e) {}
+    handleAutoInviteUrl();
 
     // 주기적 하트비트 (접속자 및 방 상태 동기화)
     setInterval(() => {
@@ -202,6 +192,7 @@ const App = (() => {
   }
 
   // Google 공용 STUN 서버 설정 (서로 다른 공유기/LTE 환경 친구 연결 보장)
+  // Google 공용 STUN 서버 설정 (공유기/LTE/모바일 P2P 연결 지원)
   const PEERJS_CONFIG = {
     config: {
       iceServers: [
@@ -213,7 +204,12 @@ const App = (() => {
     }
   };
 
-  // PeerJS (원격 인터넷 친구 초대 코드 연결)
+  // PeerJS 싱글톤 인스턴스 및 초기화 프로미스 관리 (중복 생성 방지)
+  let peerInstance = null;
+  let peerInitPromise = null;
+  let myInviteCode = null;
+  const peerConnections = new Map();
+
   function ensurePeerReady(callback) {
     if (typeof Peer !== 'undefined') {
       callback();
@@ -227,40 +223,78 @@ const App = (() => {
         callback();
       } else if (count > 60) {
         clearInterval(timer);
-        console.warn('PeerJS 라이브러리 로드 대기 초과');
+        console.warn('[PeerJS] 라이브러리 로드 대기 초과');
       }
     }, 100);
   }
 
-  function initPeerJSHost(callback) {
-    ensurePeerReady(() => {
-      if (peerInstance && myInviteCode) {
-        updateInviteModalLinkDisplay(myInviteCode);
-        if (callback) callback(myInviteCode);
-        return;
-      }
-      const randomCode = 'KKUTU-' + Math.random().toString(36).slice(2, 8).toUpperCase();
-      const peer = new Peer(randomCode, PEERJS_CONFIG);
+  function ensurePeerInstance() {
+    if (peerInstance && !peerInstance.destroyed && myInviteCode) {
+      return Promise.resolve(peerInstance);
+    }
+    if (peerInitPromise) {
+      return peerInitPromise;
+    }
 
-      peer.on('open', (id) => {
-        peerInstance = peer;
-        myInviteCode = id;
-        updateNetStatusPill(`온라인 (초대 가능: ${id})`);
-        updateInviteModalLinkDisplay(id);
-        if (callback) callback(id);
-      });
+    peerInitPromise = new Promise((resolve, reject) => {
+      ensurePeerReady(() => {
+        if (typeof Peer === 'undefined') {
+          peerInitPromise = null;
+          reject(new Error('PeerJS 라이브러리를 불러올 수 없습니다.'));
+          return;
+        }
 
-      peer.on('connection', (conn) => {
-        setupPeerConnection(conn);
-      });
+        // 공용 서버(0.peerjs.com)에서 충돌이 절대 발생하지 않는 고유 ID 부여
+        const uniqueId = 'kkutu-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
 
-      peer.on('error', (err) => {
-        if (err.type === 'unavailable-id') {
-          peer.destroy();
-          peerInstance = null;
-          setTimeout(() => initPeerJSHost(callback), 400);
+        try {
+          const peer = new Peer(uniqueId, PEERJS_CONFIG);
+
+          peer.on('open', (id) => {
+            peerInstance = peer;
+            myInviteCode = id;
+            updateNetStatusPill(`🌐 온라인 (초대 가능: ${id.slice(-6).toUpperCase()})`);
+            updateInviteModalLinkDisplay(id);
+            resolve(peer);
+          });
+
+          peer.on('connection', (conn) => {
+            setupPeerConnection(conn, false);
+          });
+
+          peer.on('error', (err) => {
+            console.warn('[PeerJS] 에러 발생:', err);
+            if (!myInviteCode) {
+              peerInitPromise = null;
+              reject(err);
+            }
+          });
+
+          peer.on('disconnected', () => {
+            try { peer.reconnect(); } catch (e) {}
+          });
+
+          peer.on('close', () => {
+            peerInstance = null;
+            peerInitPromise = null;
+            myInviteCode = null;
+          });
+        } catch (e) {
+          peerInitPromise = null;
+          reject(e);
         }
       });
+    });
+
+    return peerInitPromise;
+  }
+
+  function initPeerJSHost(callback) {
+    ensurePeerInstance().then((peer) => {
+      if (callback) callback(myInviteCode);
+    }).catch((err) => {
+      console.warn('[PeerJS] 호스트 초기화 실패:', err);
+      if (callback) callback(null);
     });
   }
 
@@ -275,11 +309,11 @@ const App = (() => {
     }
   }
 
-  function connectToRemotePeer(targetInput, autoJoinRoomId = null) {
+  async function connectToRemotePeer(targetInput, autoJoinRoomId = null) {
     if (!targetInput) return;
     let cleanCode = targetInput.trim();
 
-    // 사용자가 전체 URL(예: https://.../?room=101&host=KKUTU-ABC)을 붙여넣었을 경우 자동 파싱!
+    // 사용자가 전체 URL(예: https://.../?room=101&host=kkutu-...)을 붙여넣었을 경우 자동 파싱
     if (cleanCode.includes('?')) {
       try {
         const urlObj = new URL(cleanCode.startsWith('http') ? cleanCode : 'https://' + cleanCode);
@@ -289,54 +323,54 @@ const App = (() => {
         if (roomParam && !autoJoinRoomId) autoJoinRoomId = roomParam;
       } catch (e) {}
     }
-    cleanCode = cleanCode.toUpperCase();
 
     if (autoJoinRoomId) {
       targetRoomToAutoJoin = autoJoinRoomId;
     }
 
-    if (cleanCode === myInviteCode) {
-      showToast('⚠️ 자기 자신의 초대 링크/코드입니다.');
-      return;
-    }
+    try {
+      await ensurePeerInstance();
 
-    ensurePeerReady(() => {
-      const doConnect = () => {
-        const conn = peerInstance.connect(cleanCode, { reliable: true });
-        setupPeerConnection(conn, cleanCode);
-      };
-
-      if (!peerInstance) {
-        const myPeerId = 'KKUTU-USER-' + Math.random().toString(36).slice(2, 8).toUpperCase();
-        peerInstance = new Peer(myPeerId, PEERJS_CONFIG);
-        peerInstance.on('open', () => {
-          doConnect();
-        });
-        peerInstance.on('connection', (c) => setupPeerConnection(c));
-        peerInstance.on('error', (err) => {
-          showToast('원격 코드 연결 실패: 링크나 코드를 다시 확인해 주세요 (' + (err.type || '') + ')');
-        });
-      } else {
-        doConnect();
+      if (cleanCode === myInviteCode) {
+        showToast('⚠️ 자기 자신의 초대 코드입니다.');
+        return;
       }
-    });
+
+      showToast(`🌐 호스트(${cleanCode.slice(-6).toUpperCase()})와 연결 중...`);
+      const conn = peerInstance.connect(cleanCode, { reliable: true });
+      setupPeerConnection(conn, true);
+    } catch (err) {
+      console.error('[PeerJS] 연결 실패:', err);
+      showToast('⚠️ P2P 네트워크 초기화에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+    }
   }
 
-  function setupPeerConnection(conn, labelCode = '') {
+  function setupPeerConnection(conn, isInitiator = false) {
     conn.on('open', () => {
       peerConnections.set(conn.peer, conn);
-      updateNetStatusPill(`원격 친구 연결됨 (${peerConnections.size}명)`);
-      showToast(`🌐 원격 피어(${conn.peer})와 실시간 연결되었습니다!`);
+      updateNetStatusPill(`원격 연결됨 (${peerConnections.size}명)`);
+      showToast(`🌐 원격 피어와 실시간 P2P 연결되었습니다!`);
 
-      // 연결 즉시 내 정보, 전체 접속자 목록, 커스텀 단어장, 모든 방 정보 전송
-      conn.send({
-        senderId: myUser.id,
-        type: 'HELLO_SYNC_RES',
-        user: myUser,
-        users: Array.from(usersMap.values()),
-        rooms: Array.from(roomsMap.values()),
-        customWords: DictionaryEngine.getCustomWordsList()
-      });
+      if (isInitiator) {
+        // 내가 초대를 받아 연결을 건 피어: 호스트에게 전체 방 목록 및 입장 동기화 요청
+        conn.send({
+          senderId: myUser.id,
+          type: 'HELLO_SYNC_REQ',
+          user: myUser,
+          targetRoomId: targetRoomToAutoJoin || null,
+          customWords: DictionaryEngine.getCustomWordsList()
+        });
+      } else {
+        // 내가 초대를 받은 호스트/기존 참가자: 내 정보 및 전체 방 정보 응답
+        conn.send({
+          senderId: myUser.id,
+          type: 'HELLO_SYNC_RES',
+          user: myUser,
+          users: Array.from(usersMap.values()),
+          rooms: Array.from(roomsMap.values()),
+          customWords: DictionaryEngine.getCustomWordsList()
+        });
+      }
     });
 
     conn.on('data', (data) => {
@@ -347,8 +381,28 @@ const App = (() => {
 
     conn.on('close', () => {
       peerConnections.delete(conn.peer);
-      updateNetStatusPill(peerConnections.size > 0 ? `원격 친구 연결됨 (${peerConnections.size}명)` : '멀티탭/로컬 동기화 활성');
+      updateNetStatusPill(peerConnections.size > 0 ? `원격 연결됨 (${peerConnections.size}명)` : '멀티탭/로컬 동기화 활성');
     });
+
+    conn.on('error', (err) => {
+      console.warn('[PeerJS] 연결 에러:', err);
+    });
+  }
+
+  function handleAutoInviteUrl() {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const autoHost = urlParams.get('host');
+      const autoRoom = urlParams.get('room');
+
+      if (autoHost && autoHost !== 'null' && autoHost !== 'undefined') {
+        addLobbySystemChat(`🌐 친구 초대 링크 감지: 방 #${autoRoom || ''} 호스트와 실시간 연결 중입니다...`);
+        showToast(`🔗 초대 링크 감지: 호스트와 연결 중...`);
+        setTimeout(() => {
+          connectToRemotePeer(autoHost, autoRoom);
+        }, 300);
+      }
+    } catch (e) {}
   }
 
   function broadcastPacket(payload, excludePeerId = null) {
@@ -424,8 +478,15 @@ const App = (() => {
           user: myUser,
           users: Array.from(usersMap.values()),
           rooms: Array.from(roomsMap.values()),
-          customWords: DictionaryEngine.getCustomWordsList()
+          customWords: DictionaryEngine.getCustomWordsList(),
+          autoJoinRoomId: pkt.targetRoomId || null
         });
+        if (pkt.targetRoomId && roomsMap.has(pkt.targetRoomId)) {
+          const r = roomsMap.get(pkt.targetRoomId);
+          if (r.hostId === myUser.id) {
+            syncRoomState(r);
+          }
+        }
         break;
       }
 
@@ -449,13 +510,14 @@ const App = (() => {
         }
         renderLobbyUsers();
         renderRoomsList();
-        if (targetRoomToAutoJoin && roomsMap.has(targetRoomToAutoJoin)) {
-          const autoJoinId = targetRoomToAutoJoin;
+        const roomToJoin = pkt.autoJoinRoomId || targetRoomToAutoJoin;
+        if (roomToJoin && roomsMap.has(roomToJoin)) {
+          const autoJoinId = roomToJoin;
           targetRoomToAutoJoin = null;
           setTimeout(() => {
             joinRoom(autoJoinId, false);
-            showToast(`🎮 초대 링크를 통해 #${autoJoinId} 방에 입장했습니다!`);
-          }, 300);
+            showToast(`🎮 초대받은 방 #${autoJoinId}에 성공적으로 입장했습니다!`);
+          }, 200);
         }
         if (myUser.roomId && roomsMap.has(myUser.roomId)) {
           renderRoomArena();
@@ -836,7 +898,7 @@ const App = (() => {
   /**
    * 1-클릭 친구 초대 링크 복사 (Vercel 배포 시 카톡/디스코드에 바로 공유 가능)
    */
-  function copyRoomInviteLink() {
+  async function copyRoomInviteLink() {
     if (!myUser.roomId) {
       showToast('입장한 방이 없습니다.');
       return;
@@ -844,35 +906,44 @@ const App = (() => {
     const room = roomsMap.get(myUser.roomId);
     if (!room) return;
 
-    const btn = document.getElementById('btnCopyInviteLink');
-    if (btn) btn.textContent = '⏳ 링크 생성중...';
-
-    const finishCopy = (code) => {
-      const url = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(room.id)}&host=${encodeURIComponent(code)}`;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(() => {
-          showToast(`📋 방 #${room.id} 1-클릭 초대 링크가 복사되었습니다! 친구들에게 공유하세요.`);
-          if (btn) btn.textContent = '✅ 복사 완료!';
-          setTimeout(() => { if (btn) btn.textContent = '🔗 링크 복사'; }, 2000);
-        }).catch(() => {
-          prompt('아래 초대 링크를 복사하여 친구들에게 전달하세요:', url);
-          if (btn) btn.textContent = '🔗 링크 복사';
-        });
-      } else {
-        prompt('아래 초대 링크를 복사하여 친구들에게 전달하세요:', url);
-        if (btn) btn.textContent = '🔗 링크 복사';
-      }
+    const btnHeader = document.getElementById('btnHeaderInviteLink');
+    const btnManage = document.getElementById('btnCopyInviteLink');
+    const setBtnText = (txt) => {
+      if (btnHeader) btnHeader.textContent = txt;
+      if (btnManage) btnManage.textContent = txt;
     };
 
-    const targetCode = room.hostPeerCode || (room.hostId === myUser.id ? myInviteCode : null);
-    if (targetCode) {
-      finishCopy(targetCode);
-    } else {
-      initPeerJSHost((code) => {
-        room.hostPeerCode = code;
+    setBtnText('⏳ 링크 준비중...');
+
+    try {
+      await ensurePeerInstance();
+      const hostCode = room.hostPeerCode || (room.hostId === myUser.id ? myInviteCode : null) || myInviteCode;
+      if (!hostCode) {
+        showToast('⚠️ P2P 네트워크 연결 중입니다. 1~2초 후 다시 시도해 주세요.');
+        setBtnText('🔗 친구 초대');
+        return;
+      }
+
+      if (room.hostId === myUser.id && !room.hostPeerCode) {
+        room.hostPeerCode = hostCode;
         syncRoomState(room);
-        finishCopy(code);
-      });
+      }
+
+      const url = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(room.id)}&host=${encodeURIComponent(hostCode)}`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+        showToast(`📋 초대 링크가 복사되었습니다! 친구에게 카톡/디스코드로 전달하세요.`);
+        setBtnText('✅ 복사 완료!');
+        setTimeout(() => setBtnText('🔗 친구 초대'), 2500);
+      } else {
+        prompt('아래 초대 링크를 복사하여 친구들에게 전달하세요:', url);
+        setBtnText('🔗 친구 초대');
+      }
+    } catch (err) {
+      console.error('[초대 링크] 복사 실패:', err);
+      showToast('초대 링크 생성에 실패했습니다.');
+      setBtnText('🔗 친구 초대');
     }
   }
 
@@ -1419,8 +1490,8 @@ const App = (() => {
       return;
     }
 
-    // 실생활 고빈도 표준 명사(구체적인 뜻풀이가 있는 자연스러운 단어)를 1순위로 선정하여 봇이 억지/희귀어(발간색 등)를 내지 않도록 보장
-    const commonMatches = validCandidates.filter(e => e.isCommon && e.meaning && !e.meaning.startsWith('표준국어대사전 등재') && !e.isCustom);
+    // 실생활 고빈도 표준 명사(구체적인 뜻풀이가 있는 자연스러운 단어)를 1순위로 선정하여 봇이 억지/희귀어를 내지 않도록 보장
+    const commonMatches = validCandidates.filter(e => e.isCommon && e.meaning && !e.meaning.startsWith('국어사전 등재') && !e.meaning.startsWith('표준국어대사전') && !e.isCustom);
     const candidatePool = commonMatches.length > 0 ? commonMatches : validCandidates;
 
     // 난이도별 단어 선택
@@ -1605,6 +1676,7 @@ const App = (() => {
       openEditRoomModal();
     });
     document.getElementById('btnCopyInviteLink')?.addEventListener('click', copyRoomInviteLink);
+    document.getElementById('btnHeaderInviteLink')?.addEventListener('click', copyRoomInviteLink);
 
     document.getElementById('btnOpenRoomManage')?.addEventListener('click', () => {
       openModal('roomManageModal');
@@ -2076,7 +2148,7 @@ const App = (() => {
       targetMainEl.textContent = Hangul.formatTargetChar(room.game.targetChar, room.rules.dueum);
       targetSubEl.textContent = room.rules.dueum ? '두음법칙 ON' : '두음법칙 OFF';
     } else {
-      targetMainEl.textContent = '대기중';
+      targetMainEl.textContent = '대기';
       targetSubEl.textContent = room.rules.dueum ? '두음법칙 ON' : '두음법칙 OFF';
     }
 
@@ -2088,12 +2160,14 @@ const App = (() => {
 
     restoreCenterWordDisplay(room);
 
-    // 미션 글자 박스
+    // 미션 글자 박스 (미션 룰 활성화 시에만 깔끔하게 노출)
     const missionCharEl = document.getElementById('missionCharDisplay');
+    const missionBoxWrap = document.getElementById('missionBoxWrap');
+    if (missionBoxWrap) {
+      missionBoxWrap.style.display = room.rules.mission ? 'inline-flex' : 'none';
+    }
     if (room.rules.mission) {
-      missionCharEl.textContent = isPlaying && room.game.missionChar ? room.game.missionChar : 'ON';
-    } else {
-      missionCharEl.textContent = 'OFF';
+      missionCharEl.textContent = isPlaying && room.game.missionChar ? room.game.missionChar : '-';
     }
 
     // 타이머 바

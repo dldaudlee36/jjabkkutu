@@ -2,7 +2,7 @@ $baseDir = "c:\Users\User\Documents\antigravity\calm-salk\kkutu"
 $indexPath = Join-Path $baseDir "index.html"
 
 Write-Host "Reading existing index.html to extract HTML body..."
-$lines = [System.IO.File]::ReadAllLines($indexPath)
+$lines = [System.IO.File]::ReadAllLines($indexPath, [System.Text.Encoding]::UTF8)
 
 # Find </style>
 $styleCloseIdx = -1
