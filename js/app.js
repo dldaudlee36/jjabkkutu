@@ -40,6 +40,7 @@ const App = (() => {
   let sseSource = null;
   let serverAvailable = false;
   let peerInstance = null;
+  let peerInitPromise = null;
   let peerConnections = new Map(); // peerId -> DataConnection
   let myInviteCode = null;
   let targetRoomToAutoJoin = null;
@@ -204,11 +205,6 @@ const App = (() => {
     }
   };
 
-  // PeerJS 싱글톤 인스턴스 및 초기화 프로미스 관리 (중복 생성 방지)
-  let peerInstance = null;
-  let peerInitPromise = null;
-  let myInviteCode = null;
-  const peerConnections = new Map();
 
   function ensurePeerReady(callback) {
     if (typeof Peer !== 'undefined') {
@@ -848,7 +844,7 @@ const App = (() => {
         nickname: user.nickname,
         avatar: user.avatar,
         score: 0,
-        ready: room.hostId === user.id,
+        ready: true,
         isBot: false,
         lastWord: ''
       });
@@ -896,6 +892,48 @@ const App = (() => {
   }
 
   /**
+   * 브라우저 권한/타임아웃에 구애받지 않는 절대 실패 없는 클립보드 복사 함수
+   */
+  async function copyTextToClipboard(text) {
+    let copied = false;
+    // 1) Clipboard API (실패해도 에러 throw하지 않음)
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        copied = true;
+      } catch (e) {
+        copied = false;
+      }
+    }
+    // 2) 가상 textarea fallback (가장 호환성 높고 확실한 방법)
+    if (!copied) {
+      try {
+        const el = document.createElement('textarea');
+        el.value = text;
+        el.setAttribute('readonly', '');
+        el.style.position = 'fixed';
+        el.style.left = '-9999px';
+        el.style.top = '-9999px';
+        el.style.opacity = '0';
+        document.body.appendChild(el);
+        el.focus();
+        el.select();
+        el.setSelectionRange(0, 99999);
+        copied = document.execCommand('copy');
+        document.body.removeChild(el);
+      } catch (e) {
+        copied = false;
+      }
+    }
+    // 3) 만약 위 두 가지가 모두 막힌 경우 prompt 창으로 제공
+    if (!copied) {
+      window.prompt('아래 링크를 복사(Ctrl+C)하여 친구에게 보내세요:', text);
+      copied = true;
+    }
+    return copied;
+  }
+
+  /**
    * 1-클릭 친구 초대 링크 복사 (Vercel 배포 시 카톡/디스코드에 바로 공유 가능)
    */
   async function copyRoomInviteLink() {
@@ -930,19 +968,13 @@ const App = (() => {
       }
 
       const url = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(room.id)}&host=${encodeURIComponent(hostCode)}`;
+      await copyTextToClipboard(url);
 
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(url);
-        showToast(`📋 초대 링크가 복사되었습니다! 친구에게 카톡/디스코드로 전달하세요.`);
-        setBtnText('✅ 복사 완료!');
-        setTimeout(() => setBtnText('🔗 친구 초대'), 2500);
-      } else {
-        prompt('아래 초대 링크를 복사하여 친구들에게 전달하세요:', url);
-        setBtnText('🔗 친구 초대');
-      }
+      showToast(`📋 방 #${room.id} 초대 링크가 복사되었습니다! 친구에게 카톡/디스코드로 전달하세요.`);
+      setBtnText('✅ 복사 완료!');
+      setTimeout(() => setBtnText('🔗 친구 초대'), 2500);
     } catch (err) {
-      console.error('[초대 링크] 복사 실패:', err);
-      showToast('초대 링크 생성에 실패했습니다.');
+      console.error('[초대 링크] 복사 오류:', err);
       setBtnText('🔗 친구 초대');
     }
   }
@@ -1131,14 +1163,13 @@ const App = (() => {
 
   function startGame(room) {
     if (room.players.length < 2) {
-      showToast('⚠️ 최소 2명 이상의 플레이어가 필요합니다! (혼자 테스트하려면 상단 [+봇 추가]를 눌러보세요)');
-      return;
+      addBotToRoom('NORMAL');
+      showToast('🤖 혼자 플레이하실 수 있도록 AI 숙련봇을 자동으로 추가했습니다!');
     }
-    const notReady = room.players.find(p => p.id !== room.hostId && !p.isBot && !p.ready);
-    if (notReady) {
-      showToast(`⚠️ 아직 준비하지 않은 플레이어가 있습니다: ${notReady.nickname}`);
-      return;
-    }
+    // 방장이 게임 시작 시 모든 플레이어 즉시 준비 완료 처리
+    room.players.forEach(p => {
+      p.ready = true;
+    });
 
     room.status = 'PLAYING';
     room.players.forEach(p => {
@@ -1587,21 +1618,14 @@ const App = (() => {
     document.getElementById('btnOpenRemoteModal')?.addEventListener('click', openRemoteInviteModal);
 
     // 모달 내 1-클릭 링크 복사 버튼
-    document.getElementById('btnCopyModalLink')?.addEventListener('click', () => {
+    document.getElementById('btnCopyModalLink')?.addEventListener('click', async () => {
       const input = document.getElementById('modalInviteLinkInput');
       const btn = document.getElementById('btnCopyModalLink');
       if (!input || !input.value) return;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(input.value).then(() => {
-          showToast('📋 초대 링크가 복사되었습니다! 친구들에게 공유하세요.');
-          if (btn) btn.textContent = '✅ 복사 완료!';
-          setTimeout(() => { if (btn) btn.textContent = '📋 링크 복사'; }, 2000);
-        }).catch(() => {
-          prompt('아래 초대 링크를 복사하여 친구들에게 전달하세요:', input.value);
-        });
-      } else {
-        prompt('아래 초대 링크를 복사하여 친구들에게 전달하세요:', input.value);
-      }
+      await copyTextToClipboard(input.value);
+      showToast('📋 초대 링크가 복사되었습니다! 친구들에게 공유하세요.');
+      if (btn) btn.textContent = '✅ 복사 완료!';
+      setTimeout(() => { if (btn) btn.textContent = '📋 링크 복사'; }, 2000);
     });
 
     document.getElementById('btnConnectFriendCode')?.addEventListener('click', () => {
