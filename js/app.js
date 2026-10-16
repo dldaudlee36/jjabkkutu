@@ -155,10 +155,18 @@ const App = (() => {
       }
     });
 
-    // 2) 로컬 HTTP/SSE 서버 연결 시도 (http:// 로 열렸을 때)
-    if (location.protocol.startsWith('http')) {
+    // 2) 로컬 환경(localhost)에서만 C# SSE 서버 연결 시도 (Vercel 배포 시 불필요한 404 방지)
+    const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (isLocalhost && location.protocol.startsWith('http')) {
       tryConnectLocalServer();
+    } else {
+      updateNetStatusPill('Vercel P2P 온라인');
     }
+
+    // 3) Vercel 환경에서는 페이지 로드 즉시 P2P WebRTC 호스트 준비
+    setTimeout(() => {
+      initPeerJSHost();
+    }, 350);
 
     // 페이지 닫을 때 퇴장 알림
     window.addEventListener('beforeunload', () => {
@@ -191,69 +199,125 @@ const App = (() => {
     }
   }
 
+  // Google 공용 STUN 서버 설정 (서로 다른 공유기/LTE 환경 친구 연결 보장)
+  const PEERJS_CONFIG = {
+    config: {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:global.stun.twilio.com:3478' }
+      ]
+    }
+  };
+
   // PeerJS (원격 인터넷 친구 초대 코드 연결)
+  function ensurePeerReady(callback) {
+    if (typeof Peer !== 'undefined') {
+      callback();
+      return;
+    }
+    let count = 0;
+    const timer = setInterval(() => {
+      count++;
+      if (typeof Peer !== 'undefined') {
+        clearInterval(timer);
+        callback();
+      } else if (count > 60) {
+        clearInterval(timer);
+        console.warn('PeerJS 라이브러리 로드 대기 초과');
+      }
+    }, 100);
+  }
+
   function initPeerJSHost(callback) {
-    if (typeof Peer === 'undefined') {
-      showToast('PeerJS 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');
-      return;
-    }
-    if (peerInstance && myInviteCode) {
-      if (callback) callback(myInviteCode);
-      return;
-    }
-    const randomCode = 'KKUTU-' + Math.random().toString(36).slice(2, 8).toUpperCase();
-    const peer = new Peer(randomCode);
+    ensurePeerReady(() => {
+      if (peerInstance && myInviteCode) {
+        updateInviteModalLinkDisplay(myInviteCode);
+        if (callback) callback(myInviteCode);
+        return;
+      }
+      const randomCode = 'KKUTU-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+      const peer = new Peer(randomCode, PEERJS_CONFIG);
 
-    peer.on('open', (id) => {
-      peerInstance = peer;
-      myInviteCode = id;
-      updateNetStatusPill(`원격 호스트 활성 (${id})`);
-      const codeBox = document.getElementById('myGeneratedCodeBox');
-      if (codeBox) codeBox.textContent = id;
-      if (callback) callback(id);
-    });
+      peer.on('open', (id) => {
+        peerInstance = peer;
+        myInviteCode = id;
+        updateNetStatusPill(`온라인 (초대 가능: ${id})`);
+        updateInviteModalLinkDisplay(id);
+        if (callback) callback(id);
+      });
 
-    peer.on('connection', (conn) => {
-      setupPeerConnection(conn);
-    });
+      peer.on('connection', (conn) => {
+        setupPeerConnection(conn);
+      });
 
-    peer.on('error', (err) => {
-      showToast('원격 연결 상태: ' + (err.type || err.message));
+      peer.on('error', (err) => {
+        if (err.type === 'unavailable-id') {
+          peer.destroy();
+          peerInstance = null;
+          setTimeout(() => initPeerJSHost(callback), 400);
+        }
+      });
     });
   }
 
-  function connectToRemotePeer(targetCode, autoJoinRoomId = null) {
+  function updateInviteModalLinkDisplay(code = myInviteCode) {
+    const input = document.getElementById('modalInviteLinkInput');
+    if (!input) return;
+    if (code) {
+      const roomPart = myUser.roomId ? `&room=${encodeURIComponent(myUser.roomId)}` : '';
+      input.value = `${window.location.origin}${window.location.pathname}?host=${encodeURIComponent(code)}${roomPart}`;
+    } else {
+      input.value = '초대 코드 생성 중...';
+    }
+  }
+
+  function connectToRemotePeer(targetInput, autoJoinRoomId = null) {
+    if (!targetInput) return;
+    let cleanCode = targetInput.trim();
+
+    // 사용자가 전체 URL(예: https://.../?room=101&host=KKUTU-ABC)을 붙여넣었을 경우 자동 파싱!
+    if (cleanCode.includes('?')) {
+      try {
+        const urlObj = new URL(cleanCode.startsWith('http') ? cleanCode : 'https://' + cleanCode);
+        const hostParam = urlObj.searchParams.get('host');
+        const roomParam = urlObj.searchParams.get('room');
+        if (hostParam) cleanCode = hostParam;
+        if (roomParam && !autoJoinRoomId) autoJoinRoomId = roomParam;
+      } catch (e) {}
+    }
+    cleanCode = cleanCode.toUpperCase();
+
     if (autoJoinRoomId) {
       targetRoomToAutoJoin = autoJoinRoomId;
     }
-    const cleanCode = (targetCode || '').trim().toUpperCase();
-    if (!cleanCode) {
-      showToast('초대 코드를 입력해 주세요.');
-      return;
-    }
-    if (typeof Peer === 'undefined') {
-      showToast('PeerJS 라이브러리를 사용할 수 없습니다.');
+
+    if (cleanCode === myInviteCode) {
+      showToast('⚠️ 자기 자신의 초대 링크/코드입니다.');
       return;
     }
 
-    const doConnect = () => {
-      const conn = peerInstance.connect(cleanCode, { reliable: true });
-      setupPeerConnection(conn, cleanCode);
-    };
+    ensurePeerReady(() => {
+      const doConnect = () => {
+        const conn = peerInstance.connect(cleanCode, { reliable: true });
+        setupPeerConnection(conn, cleanCode);
+      };
 
-    if (!peerInstance) {
-      const myPeerId = 'KKUTU-USER-' + Math.random().toString(36).slice(2, 8).toUpperCase();
-      peerInstance = new Peer(myPeerId);
-      peerInstance.on('open', () => {
+      if (!peerInstance) {
+        const myPeerId = 'KKUTU-USER-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+        peerInstance = new Peer(myPeerId, PEERJS_CONFIG);
+        peerInstance.on('open', () => {
+          doConnect();
+        });
+        peerInstance.on('connection', (c) => setupPeerConnection(c));
+        peerInstance.on('error', (err) => {
+          showToast('원격 코드 연결 실패: 링크나 코드를 다시 확인해 주세요 (' + (err.type || '') + ')');
+        });
+      } else {
         doConnect();
-      });
-      peerInstance.on('connection', (c) => setupPeerConnection(c));
-      peerInstance.on('error', (err) => {
-        showToast('원격 코드 연결 실패: 코드를 다시 확인해 주세요 (' + (err.type || '') + ')');
-      });
-    } else {
-      doConnect();
-    }
+      }
+    });
   }
 
   function setupPeerConnection(conn, labelCode = '') {
@@ -1434,26 +1498,37 @@ const App = (() => {
     document.getElementById('btnSaveProfile').addEventListener('click', saveProfileFromModal);
 
     // 원격 연결 모달 열기
-    document.getElementById('netStatusPill').addEventListener('click', () => openModal('remoteConnectModal'));
-    document.getElementById('btnOpenRemoteModal').addEventListener('click', () => openModal('remoteConnectModal'));
+    const openRemoteInviteModal = () => {
+      openModal('remoteConnectModal');
+      updateInviteModalLinkDisplay(myInviteCode);
+      if (!myInviteCode) {
+        initPeerJSHost();
+      }
+    };
+    document.getElementById('netStatusPill')?.addEventListener('click', openRemoteInviteModal);
+    document.getElementById('btnOpenRemoteModal')?.addEventListener('click', openRemoteInviteModal);
 
-    document.getElementById('btnGenerateInviteCode').addEventListener('click', () => {
-      const btn = document.getElementById('btnGenerateInviteCode');
-      btn.disabled = true;
-      btn.textContent = '초대 코드 생성 중...';
-      initPeerJSHost((code) => {
-        btn.disabled = false;
-        btn.textContent = '내 초대 코드 복사하기';
-        const codeDisplay = document.getElementById('myGeneratedCodeBox');
-        codeDisplay.textContent = code;
-        navigator.clipboard?.writeText(code).catch(() => {});
-        showToast(`✅ 초대 코드 [${code}]가 생성 및 복사되었습니다! 친구에게 전달하세요.`);
-      });
+    // 모달 내 1-클릭 링크 복사 버튼
+    document.getElementById('btnCopyModalLink')?.addEventListener('click', () => {
+      const input = document.getElementById('modalInviteLinkInput');
+      const btn = document.getElementById('btnCopyModalLink');
+      if (!input || !input.value) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(input.value).then(() => {
+          showToast('📋 초대 링크가 복사되었습니다! 친구들에게 공유하세요.');
+          if (btn) btn.textContent = '✅ 복사 완료!';
+          setTimeout(() => { if (btn) btn.textContent = '📋 링크 복사'; }, 2000);
+        }).catch(() => {
+          prompt('아래 초대 링크를 복사하여 친구들에게 전달하세요:', input.value);
+        });
+      } else {
+        prompt('아래 초대 링크를 복사하여 친구들에게 전달하세요:', input.value);
+      }
     });
 
-    document.getElementById('btnConnectFriendCode').addEventListener('click', () => {
-      const code = document.getElementById('friendCodeInput').value;
-      connectToRemotePeer(code);
+    document.getElementById('btnConnectFriendCode')?.addEventListener('click', () => {
+      const inputVal = document.getElementById('friendCodeInput')?.value;
+      connectToRemotePeer(inputVal);
     });
 
     // 단어장 모달 열기 & 검색 & 추가
