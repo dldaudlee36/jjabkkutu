@@ -1663,6 +1663,7 @@ html[data-theme="cyber-neon"] .rb-mission { color: #f9a8d4; }
 </head>
 </head>
 </head>
+</head>
   
 </head>
 <body>
@@ -335727,6 +335728,7 @@ const App = (() => {
   let sseSource = null;
   let serverAvailable = false;
   let peerInstance = null;
+  let peerInitPromise = null;
   let peerConnections = new Map(); // peerId -> DataConnection
   let myInviteCode = null;
   let targetRoomToAutoJoin = null;
@@ -335891,11 +335893,6 @@ const App = (() => {
     }
   };
 
-  // PeerJS 싱글톤 인스턴스 및 초기화 프로미스 관리 (중복 생성 방지)
-  let peerInstance = null;
-  let peerInitPromise = null;
-  let myInviteCode = null;
-  const peerConnections = new Map();
 
   function ensurePeerReady(callback) {
     if (typeof Peer !== 'undefined') {
